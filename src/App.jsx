@@ -10,6 +10,7 @@ import ProspectList from './pages/ProspectList'
 import ProspectProfile from './pages/ProspectProfile'
 import Alerts from './pages/Alerts'
 import Settings from './pages/Settings'
+import AIChat from './components/AIChat'
 
 const PAGE_TITLES = {
   '/': 'Dashboard',
@@ -59,6 +60,7 @@ export default function App() {
       </div>
 
       {toast && <Toast message={toast} onClose={hideToast} />}
+      <AIChat />
     </div>
   )
 }
