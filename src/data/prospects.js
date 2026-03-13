@@ -1,5 +1,5 @@
 export const SCHOOL = {
-  name: 'Westbridge Preparatory School',
+  name: "Alleyn's School",
   tier: 'Growth',
 }
 

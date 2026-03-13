@@ -93,7 +93,7 @@ export default function AcquisitionCard({ ga4 }) {
   const DeviceIcon = DEVICE_ICON[ga4.device] || Monitor
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100/80 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-100/60 shadow-sm overflow-hidden">
       {/* Header — Channel banner */}
       <div className={`px-5 py-3.5 ${channel.bg} border-b ${channel.border} flex items-center justify-between`}>
         <div className="flex items-center gap-2.5">

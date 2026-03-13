@@ -39,7 +39,6 @@ function generateResponse(query) {
   const sorted = [...PROSPECTS].sort((a, b) => b.score - a.score)
   const avg = Math.round(PROSPECTS.reduce((s, p) => s + p.score, 0) / PROSPECTS.length)
 
-  // Who should I call / contact / priority
   if (q.includes('call') || q.includes('contact') || q.includes('priority') || q.includes('reach out')) {
     const top3 = sorted.slice(0, 3)
     return {
@@ -61,7 +60,6 @@ function generateResponse(query) {
     }
   }
 
-  // Hot prospects
   if (q.includes('hot')) {
     return {
       text: `You have ${hot.length} hot prospect${hot.length !== 1 ? 's' : ''} right now:`,
@@ -79,7 +77,6 @@ function generateResponse(query) {
     }
   }
 
-  // Warm prospects
   if (q.includes('warm')) {
     return {
       text: `You have ${warm.length} warm prospect${warm.length !== 1 ? 's' : ''} in your pipeline:`,
@@ -94,7 +91,6 @@ function generateResponse(query) {
     }
   }
 
-  // Going cold / cold / inactive
   if (q.includes('cold') || q.includes('inactive') || q.includes('losing') || q.includes('risk')) {
     const atRisk = [...goingCold, ...cold.filter((p) => !goingCold.includes(p))]
     return {
@@ -110,7 +106,6 @@ function generateResponse(query) {
     }
   }
 
-  // Silent stalkers
   if (q.includes('stalker') || q.includes('silent') || q.includes('not enquired') || q.includes('no enquiry')) {
     return {
       text: `${silentStalkers.length} silent stalker${silentStalkers.length !== 1 ? 's' : ''} detected — high engagement but no enquiry:`,
@@ -125,7 +120,6 @@ function generateResponse(query) {
     }
   }
 
-  // Fee checkers
   if (q.includes('fee') || q.includes('price') || q.includes('cost') || q.includes('budget')) {
     return {
       text: `${feeCheckers.length} prospect${feeCheckers.length !== 1 ? 's are' : ' is'} showing fee-checking behavior:`,
@@ -140,7 +134,6 @@ function generateResponse(query) {
     }
   }
 
-  // Pipeline summary / overview / stats
   if (q.includes('pipeline') || q.includes('summary') || q.includes('overview') || q.includes('stats') || q.includes('how are we doing')) {
     return {
       text: `Here's your pipeline snapshot:`,
@@ -156,7 +149,6 @@ function generateResponse(query) {
     }
   }
 
-  // Campaign / Google Ads / source
   if (q.includes('campaign') || q.includes('google ad') || q.includes('paid') || q.includes('cpc') || q.includes('ad spend') || q.includes('ads')) {
     const fromAds = PROSPECTS.filter((p) => p.ga4?.medium === 'cpc')
     return {
@@ -174,7 +166,6 @@ function generateResponse(query) {
     }
   }
 
-  // Social media / facebook
   if (q.includes('social') || q.includes('facebook') || q.includes('instagram')) {
     const fromSocial = PROSPECTS.filter((p) => p.ga4?.medium === 'social')
     return {
@@ -192,7 +183,6 @@ function generateResponse(query) {
     }
   }
 
-  // Referral
   if (q.includes('referral') || q.includes('referred')) {
     const fromReferral = PROSPECTS.filter((p) => p.ga4?.medium === 'referral')
     return {
@@ -208,7 +198,6 @@ function generateResponse(query) {
     }
   }
 
-  // Specific prospect by name
   const nameMatch = PROSPECTS.find((p) => q.includes(p.name.toLowerCase().split(' ')[0].toLowerCase()) || q.includes(p.name.toLowerCase()))
   if (nameMatch) {
     return {
@@ -234,7 +223,6 @@ function generateResponse(query) {
     }
   }
 
-  // Year group
   if (q.includes('year 7') || q.includes('year 8') || q.includes('year 9') || q.includes('year 10')) {
     const yearMatch = q.match(/year\s*(\d+)/i)
     const yearGroup = yearMatch ? `Year ${yearMatch[1]}` : null
@@ -256,7 +244,6 @@ function generateResponse(query) {
     }
   }
 
-  // Top / best / highest
   if (q.includes('top') || q.includes('best') || q.includes('highest')) {
     const top5 = sorted.slice(0, 5)
     return {
@@ -273,7 +260,6 @@ function generateResponse(query) {
     }
   }
 
-  // Help / what can you do
   if (q.includes('help') || q.includes('what can') || q.includes('how do')) {
     return {
       text: `I can help you with:`,
@@ -291,7 +277,6 @@ function generateResponse(query) {
     }
   }
 
-  // Fallback
   return {
     text: `I can help you explore your admissions pipeline. Try asking me:`,
     bullets: [
@@ -335,12 +320,12 @@ function ProspectCard({ prospect, onNavigate }) {
   return (
     <div
       onClick={() => onNavigate(prospect.id)}
-      className="flex items-center gap-3 p-2.5 rounded-xl bg-white/60 border border-slate-100 hover:bg-white hover:shadow-sm transition-all cursor-pointer group"
+      className="flex items-center gap-3 p-2.5 rounded-xl bg-white/60 border border-slate-100/60 hover:bg-white hover:shadow-sm transition-all cursor-pointer group"
     >
       {prospect.rank && (
         <span className="text-xs font-bold text-slate-300 w-4 text-center">{prospect.rank}</span>
       )}
-      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold bg-gradient-to-br from-brand-500 to-violet-500 flex-shrink-0">
+      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold bg-gradient-to-br from-brand-500 to-pink-500 flex-shrink-0">
         {prospect.name
           .split(' ')
           .map((w) => w[0])
@@ -348,7 +333,7 @@ function ProspectCard({ prospect, onNavigate }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-800">{prospect.name}</span>
+          <span className="text-xs font-bold text-slate-800">{prospect.name}</span>
           <span
             className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
             style={{ color: bc.color, background: bc.bg }}
@@ -404,7 +389,6 @@ export default function AIChat() {
     setInput('')
     setTyping(true)
 
-    // Simulate AI thinking delay
     const delay = 600 + Math.random() * 800
     setTimeout(() => {
       const response = generateResponse(query)
@@ -429,10 +413,9 @@ export default function AIChat() {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             onClick={() => setOpen(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-violet-600 text-white shadow-xl shadow-brand-500/30 flex items-center justify-center hover:shadow-2xl hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all z-50 cursor-pointer group"
+            className="fixed bottom-6 right-6 w-14 h-14 rounded-2xl brand-gradient text-white shadow-xl shadow-brand-500/25 flex items-center justify-center hover:shadow-2xl hover:shadow-brand-500/35 hover:-translate-y-0.5 transition-all z-50 cursor-pointer group"
           >
             <Sparkles size={22} className="group-hover:rotate-12 transition-transform" />
-            {/* Pulse ring */}
             <span className="absolute inset-0 rounded-2xl bg-brand-500/30 animate-ping opacity-20" />
           </motion.button>
         )}
@@ -446,16 +429,16 @@ export default function AIChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="fixed bottom-6 right-6 w-[420px] h-[600px] bg-white rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-200/80 flex flex-col z-50 overflow-hidden"
+            className="fixed bottom-6 right-6 w-[420px] h-[600px] bg-white rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-200/60 flex flex-col z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="px-5 py-4 bg-gradient-to-r from-brand-600 via-brand-500 to-violet-500 flex items-center gap-3 flex-shrink-0">
+            <div className="px-5 py-4 brand-gradient flex items-center gap-3 flex-shrink-0">
               <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
                 <Sparkles size={18} className="text-white" />
               </div>
               <div className="flex-1">
                 <div className="text-white font-bold text-sm">Sprx AI</div>
-                <div className="text-white/60 text-[11px] font-medium flex items-center gap-1.5">
+                <div className="text-white/40 text-[11px] font-medium flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   Analysing {PROSPECTS.length} prospects in real-time
                 </div>
@@ -490,35 +473,32 @@ export default function AIChat() {
                     transition={{ duration: 0.3 }}
                     className="space-y-2"
                   >
-                    {/* AI icon */}
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="w-5 h-5 rounded-md bg-gradient-to-br from-brand-500 to-violet-500 flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-md bg-gradient-to-br from-brand-500 to-pink-500 flex items-center justify-center">
                         <Sparkles size={10} className="text-white" />
                       </div>
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         Sprx AI
                       </span>
                     </div>
 
-                    {/* Main text */}
-                    <div className="bg-slate-50 rounded-2xl rounded-tl-md px-4 py-3 max-w-[95%]">
+                    <div className="bg-slate-50/80 rounded-2xl rounded-tl-md px-4 py-3 max-w-[95%] border border-slate-100/60">
                       <p className="text-[13px] text-slate-700 leading-relaxed">
                         {msg.content.text}
                       </p>
 
-                      {/* Stats grid */}
                       {msg.content.stats && (
                         <div className="grid grid-cols-3 gap-2 mt-3">
                           {msg.content.stats.map((s, j) => (
                             <div
                               key={j}
-                              className="bg-white rounded-lg px-2.5 py-2 border border-slate-100"
+                              className="bg-white rounded-lg px-2.5 py-2 border border-slate-100/60"
                             >
-                              <div className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">
+                              <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
                                 {s.label}
                               </div>
                               <div
-                                className={`text-sm font-extrabold mt-0.5 ${
+                                className={`stat-number text-base mt-0.5 ${
                                   s.color || 'text-slate-800'
                                 }`}
                               >
@@ -529,7 +509,6 @@ export default function AIChat() {
                         </div>
                       )}
 
-                      {/* Prospect cards */}
                       {msg.content.prospects && (
                         <div className="mt-3 space-y-2">
                           {msg.content.prospects.map((p) => (
@@ -542,7 +521,6 @@ export default function AIChat() {
                         </div>
                       )}
 
-                      {/* Bullet list */}
                       {msg.content.bullets && (
                         <ul className="mt-3 space-y-1.5">
                           {msg.content.bullets.map((b, j) => (
@@ -559,15 +537,14 @@ export default function AIChat() {
                         </ul>
                       )}
 
-                      {/* Footer insight */}
                       {msg.content.footer && (
-                        <div className="mt-3 pt-3 border-t border-slate-100">
+                        <div className="mt-3 pt-3 border-t border-slate-100/60">
                           <div className="flex items-start gap-2">
                             <Sparkles
                               size={11}
                               className="text-brand-500 flex-shrink-0 mt-0.5"
                             />
-                            <p className="text-[12px] text-brand-700 leading-relaxed font-medium">
+                            <p className="text-[12px] text-brand-700 leading-relaxed font-semibold">
                               {msg.content.footer}
                             </p>
                           </div>
@@ -582,14 +559,14 @@ export default function AIChat() {
               <div ref={bottomRef} />
             </div>
 
-            {/* Suggestions (only show when few messages) */}
+            {/* Suggestions */}
             {messages.length <= 2 && !typing && (
               <div className="px-4 pb-2 flex flex-wrap gap-1.5">
                 {SUGGESTIONS.slice(0, 4).map((s) => (
                   <button
                     key={s.text}
                     onClick={() => handleSend(s.text)}
-                    className="text-[11px] font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer border border-brand-100"
+                    className="text-[11px] font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer border border-brand-100/60"
                   >
                     <s.icon size={10} />
                     {s.text}
@@ -599,13 +576,13 @@ export default function AIChat() {
             )}
 
             {/* Input */}
-            <div className="px-4 py-3 border-t border-slate-100 flex-shrink-0">
+            <div className="px-4 py-3 border-t border-slate-100/60 flex-shrink-0">
               <form
                 onSubmit={(e) => {
                   e.preventDefault()
                   handleSend()
                 }}
-                className="flex items-center gap-2 bg-slate-50 rounded-xl px-4 py-2.5 border border-slate-200 focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-100 transition-all"
+                className="flex items-center gap-2 bg-slate-50/80 rounded-xl px-4 py-2.5 border border-slate-200/60 focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-100 transition-all"
               >
                 <MessageSquare size={14} className="text-slate-300 flex-shrink-0" />
                 <input
@@ -619,7 +596,7 @@ export default function AIChat() {
                 <button
                   type="submit"
                   disabled={!input.trim()}
-                  className="w-7 h-7 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-slate-200 flex items-center justify-center transition-colors cursor-pointer disabled:cursor-not-allowed"
+                  className="w-7 h-7 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:bg-slate-200 flex items-center justify-center transition-all cursor-pointer disabled:cursor-not-allowed active:scale-90"
                 >
                   <Send size={12} className="text-white" />
                 </button>

@@ -59,10 +59,10 @@ function TrafficSourcesCard() {
   const [hovered, setHovered] = useState(null)
 
   return (
-    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/80 p-5">
+    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/60 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Traffic Sources</h3>
+          <h3 className="text-sm font-bold text-slate-900 tracking-tight">Traffic Sources</h3>
           <p className="text-[11px] text-slate-400 mt-0.5">Where your visitors come from</p>
         </div>
         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 px-2 py-1 rounded-lg">
@@ -129,10 +129,10 @@ function ConversionByChannelCard() {
   const sorted = [...CONVERSION_BY_CHANNEL].sort((a, b) => b.rate - a.rate)
 
   return (
-    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/80 p-5">
+    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/60 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Conversion by Channel</h3>
+          <h3 className="text-sm font-bold text-slate-900 tracking-tight">Conversion by Channel</h3>
           <p className="text-[11px] text-slate-400 mt-0.5">
             Visitor → Enquiry rate per source
           </p>
@@ -191,10 +191,10 @@ function ConversionByChannelCard() {
 /* ─── Device Split ─── */
 function DeviceSplitCard() {
   return (
-    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/80 p-5">
+    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/60 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Devices</h3>
+          <h3 className="text-sm font-bold text-slate-900 tracking-tight">Devices</h3>
           <p className="text-[11px] text-slate-400 mt-0.5">How families browse your site</p>
         </div>
       </div>
@@ -213,7 +213,7 @@ function DeviceSplitCard() {
                   <span className="text-xs text-slate-400">
                     {d.sessions.toLocaleString()} sessions
                   </span>
-                  <span className="text-sm font-bold text-slate-900">{d.value}%</span>
+                  <span className="text-sm font-bold text-slate-900 tracking-tight">{d.value}%</span>
                 </div>
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -248,11 +248,11 @@ function CampaignPerformanceCard() {
   return (
     <motion.div
       variants={item}
-      className="bg-white rounded-2xl border border-slate-100/80 overflow-hidden col-span-2"
+      className="bg-white rounded-2xl border border-slate-100/60 shadow-sm overflow-hidden col-span-2"
     >
       <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Campaign Performance</h3>
+          <h3 className="text-sm font-bold text-slate-900 tracking-tight">Campaign Performance</h3>
           <p className="text-[11px] text-slate-400 mt-0.5">
             Which campaigns are producing your best prospects
           </p>
@@ -330,10 +330,10 @@ function TopLandingPagesCard() {
   const maxRate = Math.max(...sorted.map((p) => p.rate))
 
   return (
-    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/80 p-5">
+    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/60 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Top Landing Pages</h3>
+          <h3 className="text-sm font-bold text-slate-900 tracking-tight">Top Landing Pages</h3>
           <p className="text-[11px] text-slate-400 mt-0.5">By enquiry conversion rate</p>
         </div>
         <ExternalLink size={14} className="text-slate-300" />
@@ -382,10 +382,10 @@ function GeoRegionsCard() {
   const maxPct = Math.max(...GEO_REGIONS.map((r) => r.pct))
 
   return (
-    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/80 p-5">
+    <motion.div variants={item} className="bg-white rounded-2xl border border-slate-100/60 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Visitor Regions</h3>
+          <h3 className="text-sm font-bold text-slate-900 tracking-tight">Visitor Regions</h3>
           <p className="text-[11px] text-slate-400 mt-0.5">Where families are browsing from</p>
         </div>
         <MapPin size={14} className="text-slate-300" />
@@ -434,7 +434,7 @@ export default function AcquisitionInsights() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Acquisition Insights</h2>
+          <h2 className="font-display text-xl text-slate-900 italic">Acquisition Insights</h2>
           <p className="text-xs text-slate-400 mt-0.5">
             School-wide website analytics from Google Analytics 4
           </p>

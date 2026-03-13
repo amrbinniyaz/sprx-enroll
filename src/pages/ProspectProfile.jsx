@@ -91,8 +91,8 @@ function TimelineEvent({ event }) {
           <Icon size={13} />
         </div>
         <div className="flex-1 min-w-0 bg-gradient-to-r from-brand-50/60 to-transparent rounded-xl px-3.5 py-2.5 -ml-0.5 border border-brand-100/40">
-          <div className="text-[13px] font-semibold text-slate-900">{event.title}</div>
-          <div className="text-[10px] text-brand-500 font-medium mt-0.5 uppercase tracking-wider">
+          <div className="text-[13px] font-bold text-slate-900">{event.title}</div>
+          <div className="text-[10px] text-brand-600 font-bold mt-0.5 uppercase tracking-wider">
             Conversion event
           </div>
         </div>
@@ -124,7 +124,7 @@ function TimelineGroup({ group }) {
   return (
     <div>
       <div className="flex items-center gap-2.5 mb-3">
-        <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">
           {group.label}
         </span>
         <div className="flex-1 h-px bg-slate-100" />
@@ -158,7 +158,7 @@ export default function ProspectProfile({ onToast }) {
         <div className="text-sm">Prospect not found</div>
         <button
           onClick={() => navigate('/prospects')}
-          className="mt-4 text-sm text-brand-600 font-medium hover:underline cursor-pointer"
+          className="mt-4 text-sm text-brand-600 font-bold hover:underline cursor-pointer"
         >
           Back to Prospects
         </button>
@@ -178,13 +178,13 @@ export default function ProspectProfile({ onToast }) {
     >
       <button
         onClick={() => navigate('/prospects')}
-        className="text-sm text-slate-400 hover:text-slate-700 flex items-center gap-2 transition-colors font-medium cursor-pointer"
+        className="text-sm text-slate-400 hover:text-slate-700 flex items-center gap-2 transition-colors font-semibold cursor-pointer"
       >
         <ArrowLeft size={15} /> Back to Prospects
       </button>
 
       {/* Header Card */}
-      <div className="bg-white rounded-2xl border border-slate-100/80 p-6">
+      <div className="bg-white rounded-2xl border border-slate-100/60 p-6 shadow-sm">
         <div className="flex gap-6">
           <div className="flex flex-col items-center gap-3 flex-shrink-0">
             <Avatar name={prospect.name} size="w-16 h-16 text-xl" />
@@ -193,19 +193,19 @@ export default function ProspectProfile({ onToast }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                <h1 className="font-display text-3xl text-slate-900 italic">
                   {prospect.name}
                 </h1>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <BandPill band={prospect.band} size="lg" />
                   {pat && (
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-semibold ${pat.pill}`}
+                      className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-bold ${pat.pill}`}
                     >
                       {pat.label}
                     </span>
                   )}
-                  <span className="text-xs text-slate-400 ml-1">
+                  <span className="text-xs text-slate-400 ml-1 font-medium">
                     {prospect.visits} website visits
                   </span>
                 </div>
@@ -216,7 +216,7 @@ export default function ProspectProfile({ onToast }) {
                   setStatus(e.target.value)
                   onToast?.(`Status updated to ${e.target.value}`)
                 }}
-                className="text-sm bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/30 cursor-pointer"
+                className="text-sm bg-slate-50 border border-slate-200/60 rounded-xl px-3.5 py-2 text-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-brand-500/20 cursor-pointer"
               >
                 <option value="active">Active</option>
                 <option value="enrolled">Enrolled</option>
@@ -229,7 +229,7 @@ export default function ProspectProfile({ onToast }) {
                 <Mail size={14} className="text-slate-400" />
                 <a
                   href={`mailto:${prospect.email}`}
-                  className="text-brand-600 hover:underline"
+                  className="text-brand-600 hover:underline font-medium"
                 >
                   {prospect.email}
                 </a>
@@ -238,7 +238,7 @@ export default function ProspectProfile({ onToast }) {
                 <Phone size={14} className="text-slate-400" />
                 <a
                   href={`tel:${prospect.phone}`}
-                  className="font-semibold text-slate-800 hover:text-brand-600"
+                  className="font-bold text-slate-800 hover:text-brand-600"
                 >
                   {prospect.phone}
                 </a>
@@ -256,17 +256,17 @@ export default function ProspectProfile({ onToast }) {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 mt-6 pt-5 border-t border-slate-100">
+        <div className="flex gap-3 mt-6 pt-5 border-t border-slate-100/60">
           <button
             onClick={() => onToast?.(`${prospect.name} marked as called`)}
-            className="bg-brand-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-brand-700 transition-colors shadow-sm shadow-brand-600/15 flex items-center gap-2 cursor-pointer"
+            className="bg-slate-900 text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-[0.97]"
           >
             <Phone size={14} /> Mark as Called
           </button>
-          <button className="bg-slate-100 text-slate-700 text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-slate-200 transition-colors flex items-center gap-2 cursor-pointer">
+          <button className="bg-slate-50 text-slate-700 text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-slate-100 transition-all flex items-center gap-2 cursor-pointer border border-slate-200/60">
             <Calendar size={14} /> Book Open Day
           </button>
-          <button className="bg-slate-100 text-slate-700 text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-slate-200 transition-colors flex items-center gap-2 cursor-pointer">
+          <button className="bg-slate-50 text-slate-700 text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-slate-100 transition-all flex items-center gap-2 cursor-pointer border border-slate-200/60">
             <Mail size={14} /> Send Email
           </button>
         </div>
@@ -276,13 +276,13 @@ export default function ProspectProfile({ onToast }) {
         {/* Left Column */}
         <div className="col-span-1 space-y-5">
           {/* AI Summary */}
-          <div className="ai-glow rounded-2xl p-5 border border-brand-100/50">
+          <div className="ai-glow rounded-2xl p-5 border border-brand-100/40">
             <div className="relative flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-500 to-violet-500 flex items-center justify-center shadow-sm">
+              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-500 to-pink-500 flex items-center justify-center shadow-sm">
                 <Sparkles size={12} className="text-white" />
               </div>
               <span className="text-sm font-bold text-brand-800">EnrolIQ Intelligence</span>
-              <span className="text-[10px] bg-brand-100 text-brand-600 font-semibold px-1.5 py-0.5 rounded-md ml-auto">
+              <span className="text-[10px] bg-brand-100 text-brand-700 font-bold px-1.5 py-0.5 rounded-md ml-auto">
                 AI
               </span>
             </div>
@@ -295,14 +295,14 @@ export default function ProspectProfile({ onToast }) {
           <AcquisitionCard ga4={prospect.ga4} />
 
           {/* Call Script */}
-          <div className="bg-white rounded-2xl border border-slate-100/80 p-5">
+          <div className="bg-white rounded-2xl border border-slate-100/60 p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
               <Phone size={14} className="text-slate-400" />
               <span className="text-sm font-bold text-slate-900">Suggested Call Opener</span>
             </div>
-            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-              <p className="text-[13px] text-slate-600 italic leading-relaxed">
-                &ldquo;Hi {prospect.name.split(' ')[0]}, this is Amanda from Westbridge. I wanted
+            <div className="bg-slate-50/80 rounded-xl p-4 border border-slate-100/60">
+              <p className="text-[13px] text-slate-600 italic leading-relaxed font-display text-base">
+                &ldquo;Hi {prospect.name.split(' ')[0]}, this is Amanda from Alleyn's. I wanted
                 to personally follow up on {prospect.childName}&rsquo;s enquiry and make sure you
                 have everything you need. I noticed you&rsquo;ve been looking at our fees
                 information — would you like me to walk you through our bursary options?&rdquo;
@@ -311,10 +311,10 @@ export default function ProspectProfile({ onToast }) {
           </div>
 
           {/* Notes */}
-          <div className="bg-white rounded-2xl border border-slate-100/80 p-5">
+          <div className="bg-white rounded-2xl border border-slate-100/60 p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-bold text-slate-900">Notes</span>
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                 Private
               </span>
             </div>
@@ -322,12 +322,12 @@ export default function ProspectProfile({ onToast }) {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add notes about calls, meetings, observations..."
-              className="w-full text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-400 resize-none transition-all"
+              className="w-full text-sm text-slate-700 bg-slate-50/80 border border-slate-200/60 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 resize-none transition-all"
               rows={4}
             />
             <button
               onClick={() => onToast?.('Notes saved')}
-              className="mt-2.5 w-full text-xs font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 py-2.5 rounded-xl transition-colors cursor-pointer"
+              className="mt-2.5 w-full text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 py-2.5 rounded-xl transition-colors cursor-pointer border border-brand-100/60"
             >
               Save Notes
             </button>
@@ -336,11 +336,11 @@ export default function ProspectProfile({ onToast }) {
 
         {/* Right Column — Timeline */}
         <div className="col-span-2">
-          <div className="bg-white rounded-2xl border border-slate-100/80 p-5">
+          <div className="bg-white rounded-2xl border border-slate-100/60 p-5 shadow-sm">
             {/* Header */}
             <div className="flex items-center justify-between mb-1">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Interaction Timeline</h3>
+                <h3 className="font-display text-lg text-slate-900 italic">Interaction Timeline</h3>
                 <p className="text-xs text-slate-400 mt-0.5">
                   {prospect.events.length} events &middot; {prospect.createdAt} to now
                 </p>
@@ -362,9 +362,9 @@ export default function ProspectProfile({ onToast }) {
             </div>
 
             {/* Engagement summary strip */}
-            <div className="flex items-center gap-3 mt-4 mb-5 p-3 bg-slate-50 rounded-xl">
+            <div className="flex items-center gap-3 mt-4 mb-5 p-3 bg-slate-50/80 rounded-xl border border-slate-100/60">
               <div className="flex-1">
-                <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mb-1.5">Engagement over time</div>
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Engagement over time</div>
                 <div className="flex h-1.5 rounded-full overflow-hidden gap-px">
                   {prospect.events.map((ev, i) => (
                     <div
@@ -372,7 +372,7 @@ export default function ProspectProfile({ onToast }) {
                       className="flex-1 rounded-full"
                       style={{
                         background: isConversion(ev.type)
-                          ? '#6366f1'
+                          ? '#7c3aed'
                           : ev.type === 'email_open'
                             ? '#10b981'
                             : ev.scroll && ev.scroll >= 80
@@ -387,13 +387,13 @@ export default function ProspectProfile({ onToast }) {
               </div>
               <div className="border-l border-slate-200 pl-3 flex gap-4">
                 <div className="text-center">
-                  <div className="text-sm font-bold text-slate-900">
+                  <div className="stat-number text-lg text-slate-900">
                     {prospect.events.filter((e) => e.type === 'page_view').length}
                   </div>
                   <div className="text-[10px] text-slate-400">Views</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm font-bold text-brand-600">
+                  <div className="stat-number text-lg text-brand-600">
                     {prospect.events.filter((e) => isConversion(e.type)).length}
                   </div>
                   <div className="text-[10px] text-slate-400">Actions</div>

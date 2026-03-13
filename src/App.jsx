@@ -39,10 +39,10 @@ export default function App() {
   const title = isProfile && prospect ? prospect.name : PAGE_TITLES[location.pathname] || 'Dashboard'
 
   return (
-    <div className="min-h-screen bg-[#f2f3f7]">
+    <div className="min-h-screen bg-ivory bg-noise">
       <Sidebar alertCount={alertCount} />
 
-      <div className="ml-[260px] min-h-screen">
+      <div className="ml-[272px] min-h-screen relative z-10">
         <TopBar title={title} alertCount={alertCount} />
 
         <main className="px-8 py-7">
