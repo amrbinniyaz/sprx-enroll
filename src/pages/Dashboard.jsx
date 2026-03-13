@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { ChevronRight, Flame, Eye, Snowflake, FileText, Mail, MousePointerClick } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { PROSPECTS, ACTIVITY_FEED } from '../data/prospects'
 import { getBand, getPattern } from '../lib/utils'
 import Avatar from '../components/Avatar'
@@ -75,21 +74,22 @@ export default function Dashboard() {
       {hot.length > 0 && (
         <motion.div
           variants={item}
-          className="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-2xl p-5 flex items-center gap-5"
+          className="bg-white rounded-2xl px-5 py-4 flex items-center gap-4 border border-slate-100/80 shadow-sm"
         >
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_50%,white_0%,transparent_60%)]" />
-          <div className="relative text-4xl anim-pulse-hot rounded-full">&#128293;</div>
-          <div className="relative flex-1">
-            <div className="text-white font-bold text-base">
-              Action Required: {hot.length} Hot Prospect{hot.length > 1 ? 's' : ''}
+          <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+            <Flame size={18} className="text-red-500" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-slate-900 font-semibold text-sm">
+              {hot.length} hot prospect{hot.length > 1 ? 's' : ''} need attention
             </div>
-            <div className="text-red-100 text-sm mt-0.5">
-              {topProspect.name} ({topProspect.score}) is your highest priority call right now.
+            <div className="text-slate-400 text-[13px] mt-0.5">
+              {topProspect.name} ({topProspect.score}) is your highest priority right now
             </div>
           </div>
           <button
             onClick={() => navigate(`/prospects/${topProspect.id}`)}
-            className="relative bg-white text-red-600 text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-red-50 transition-colors shadow-lg shadow-red-900/20 flex-shrink-0 cursor-pointer"
+            className="text-brand-600 bg-brand-50 hover:bg-brand-100 text-sm font-semibold px-4 py-2 rounded-xl transition-colors flex-shrink-0 cursor-pointer"
           >
             View Profile &rarr;
           </button>
@@ -105,60 +105,70 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-3 gap-5">
-        {/* Chart */}
+        {/* Pipeline Breakdown */}
         <motion.div
           variants={item}
           className="bg-white rounded-2xl p-5 border border-slate-100/80"
         >
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">
-            Pipeline Breakdown
-          </h3>
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Pipeline Breakdown
+            </h3>
+            <span className="text-[11px] text-slate-400 font-medium">
+              {PROSPECTS.length} total
+            </span>
+          </div>
 
-          {/* Stacked bar */}
-          <div className="flex h-3 rounded-full overflow-hidden gap-[2px] mb-5">
+          <div className="space-y-4">
+            {bandData.map((b) => {
+              const pct = Math.round((b.count / PROSPECTS.length) * 100)
+              return (
+                <div key={b.name}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-2 h-2 rounded-full"
+                        style={{ background: b.color }}
+                      />
+                      <span className="text-[13px] text-slate-600 font-medium">
+                        {b.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-bold text-slate-900">
+                        {b.count}
+                      </span>
+                      <span className="text-[11px] text-slate-400 w-8 text-right">
+                        {pct}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: b.color, opacity: 0.8 }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Mini stacked summary bar */}
+          <div className="flex h-1.5 rounded-full overflow-hidden gap-px mt-6">
             {bandData.map((b) => (
               <div
                 key={b.name}
-                className="rounded-full transition-all duration-700"
+                className="rounded-full"
                 style={{
                   width: `${(b.count / PROSPECTS.length) * 100}%`,
                   background: b.color,
+                  opacity: 0.6,
                 }}
               />
-            ))}
-          </div>
-
-          <div className="h-40 mt-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={bandData} barSize={32} barCategoryGap="20%">
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-                <YAxis hide />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: 12,
-                    border: '1px solid #e2e8f0',
-                    fontSize: 13,
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                  }}
-                />
-                <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                  {bandData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="grid grid-cols-2 gap-y-3 gap-x-4 mt-4">
-            {bandData.map((b) => (
-              <div key={b.name} className="flex items-center gap-2.5">
-                <div className="w-2.5 h-2.5 rounded-[3px]" style={{ background: b.color }} />
-                <span className="text-[13px] text-slate-600 flex-1">
-                  {b.emoji} {b.name}
-                </span>
-                <span className="text-[13px] font-bold text-slate-900">{b.count}</span>
-              </div>
             ))}
           </div>
         </motion.div>
@@ -216,9 +226,18 @@ export default function Dashboard() {
         variants={item}
         className="bg-white rounded-2xl border border-slate-100/80 overflow-hidden"
       >
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h3 className="text-sm font-bold text-slate-900">Live Activity Feed</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Real-time updates from your website</p>
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900">Live Activity Feed</h3>
+            <p className="text-xs text-slate-400 mt-0.5">Real-time updates from your website</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+            </span>
+            <span className="text-[11px] font-medium text-emerald-600">Live</span>
+          </div>
         </div>
         {ACTIVITY_FEED.map((a, i) => (
           <div

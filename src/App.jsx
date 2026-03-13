@@ -39,7 +39,7 @@ export default function App() {
   const title = isProfile && prospect ? prospect.name : PAGE_TITLES[location.pathname] || 'Dashboard'
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f2f3f7]">
       <Sidebar alertCount={alertCount} />
 
       <div className="ml-[260px] min-h-screen">

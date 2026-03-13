@@ -10,39 +10,129 @@ import BandPill from '../components/BandPill'
 import AcquisitionCard from '../components/AcquisitionCard'
 
 const EVENT_STYLES = {
-  page_view: { icon: Eye, bg: 'bg-slate-100 text-slate-500' },
-  form_submit: { icon: FileText, bg: 'bg-brand-50 text-brand-600' },
-  email_open: { icon: Mail, bg: 'bg-green-50 text-green-600' },
-  email_click: { icon: ExternalLink, bg: 'bg-blue-50 text-blue-600' },
+  page_view: { icon: Eye, bg: 'bg-slate-50 text-slate-400', label: 'Viewed' },
+  form_submit: { icon: FileText, bg: 'bg-brand-50 text-brand-600', label: 'Submitted' },
+  email_open: { icon: Mail, bg: 'bg-emerald-50 text-emerald-600', label: 'Opened' },
+  email_click: { icon: ExternalLink, bg: 'bg-blue-50 text-blue-600', label: 'Clicked' },
 }
 
-function TimelineItem({ event, isLast }) {
-  const style = EVENT_STYLES[event.type] || EVENT_STYLES.page_view
-  const Icon = style.icon
+const isConversion = (type) => type === 'form_submit' || type === 'email_click'
+
+function parseTimeToMs(timeStr) {
+  if (timeStr.includes('mins')) return parseInt(timeStr) * 60000
+  if (timeStr.includes('hours')) return parseInt(timeStr) * 3600000
+  if (timeStr.includes('day')) return parseInt(timeStr) * 86400000
+  return 0
+}
+
+function groupEventsByPeriod(events) {
+  const groups = []
+  let current = null
+
+  events.forEach((ev) => {
+    const label = ev.time
+    if (!current || current.label !== label) {
+      current = { label, events: [] }
+      groups.push(current)
+    }
+    current.events.push(ev)
+  })
+
+  return groups
+}
+
+function TimelineGap({ fromTime, toTime }) {
+  const fromMs = parseTimeToMs(fromTime)
+  const toMs = parseTimeToMs(toTime)
+  const diffDays = Math.round(Math.abs(toMs - fromMs) / 86400000)
+  if (diffDays < 2) return null
 
   return (
-    <div className="flex gap-4">
-      <div className="flex flex-col items-center">
+    <div className="flex items-center gap-3 py-2 px-1">
+      <div className="flex-1 border-t border-dashed border-slate-200" />
+      <span className="text-[10px] text-slate-300 font-medium tracking-wide uppercase whitespace-nowrap">
+        {diffDays} days quiet
+      </span>
+      <div className="flex-1 border-t border-dashed border-slate-200" />
+    </div>
+  )
+}
+
+function ScrollBar({ scroll }) {
+  if (!scroll) return null
+  return (
+    <div className="flex items-center gap-2 mt-1.5">
+      <div className="w-20 h-1 bg-slate-100 rounded-full overflow-hidden">
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${style.bg}`}
-        >
-          <Icon size={14} />
-        </div>
-        {!isLast && <div className="w-px flex-1 bg-slate-100 mt-1.5" />}
+          className="h-full rounded-full transition-all duration-500"
+          style={{
+            width: `${scroll}%`,
+            background:
+              scroll >= 80 ? '#10b981' : scroll >= 50 ? '#f59e0b' : '#94a3b8',
+          }}
+        />
       </div>
-      <div className={isLast ? '' : 'pb-5'} style={{ flex: 1 }}>
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="text-sm font-medium text-slate-900">{event.title}</div>
-            {event.duration && (
-              <div className="text-xs text-slate-400 mt-0.5">
-                {event.duration} on page
-                {event.scroll ? ` · ${event.scroll}% scrolled` : ''}
-              </div>
-            )}
-          </div>
-          <span className="text-[11px] text-slate-400 flex-shrink-0 ml-4">{event.time}</span>
+      <span className="text-[10px] text-slate-400">{scroll}%</span>
+    </div>
+  )
+}
+
+function TimelineEvent({ event }) {
+  const style = EVENT_STYLES[event.type] || EVENT_STYLES.page_view
+  const Icon = style.icon
+  const conversion = isConversion(event.type)
+
+  if (conversion) {
+    return (
+      <div className="flex gap-3.5 items-start">
+        <div
+          className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${style.bg} ring-2 ring-white shadow-sm`}
+        >
+          <Icon size={13} />
         </div>
+        <div className="flex-1 min-w-0 bg-gradient-to-r from-brand-50/60 to-transparent rounded-xl px-3.5 py-2.5 -ml-0.5 border border-brand-100/40">
+          <div className="text-[13px] font-semibold text-slate-900">{event.title}</div>
+          <div className="text-[10px] text-brand-500 font-medium mt-0.5 uppercase tracking-wider">
+            Conversion event
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex gap-3.5 items-start">
+      <div
+        className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${style.bg}`}
+      >
+        <Icon size={13} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-[13px] font-medium text-slate-700">{event.title}</span>
+          {event.duration && (
+            <span className="text-[11px] text-slate-400">{event.duration}</span>
+          )}
+        </div>
+        <ScrollBar scroll={event.scroll} />
+      </div>
+    </div>
+  )
+}
+
+function TimelineGroup({ group }) {
+  return (
+    <div>
+      <div className="flex items-center gap-2.5 mb-3">
+        <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+          {group.label}
+        </span>
+        <div className="flex-1 h-px bg-slate-100" />
+      </div>
+      <div className="space-y-3 ml-0.5">
+        {group.events.map((ev, i) => (
+          <TimelineEvent key={i} event={ev} />
+        ))}
       </div>
     </div>
   )
@@ -56,8 +146,8 @@ export default function ProspectProfile({ onToast }) {
   const [notes, setNotes] = useState(prospect?.notes || '')
   const [status, setStatus] = useState(prospect?.status || 'active')
 
-  const reversedEvents = useMemo(
-    () => (prospect ? [...prospect.events].reverse() : []),
+  const timelineGroups = useMemo(
+    () => (prospect ? groupEventsByPeriod([...prospect.events].reverse()) : []),
     [prospect]
   )
 
@@ -247,28 +337,84 @@ export default function ProspectProfile({ onToast }) {
         {/* Right Column — Timeline */}
         <div className="col-span-2">
           <div className="bg-white rounded-2xl border border-slate-100/80 p-5">
-            <div className="flex items-center justify-between mb-5">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-1">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Interaction Timeline</h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  {prospect.events.length} events tracked
+                  {prospect.events.length} events &middot; {prospect.createdAt} to now
                 </p>
               </div>
-              <div className="flex gap-4 text-[11px] text-slate-400 font-medium">
+              <div className="flex gap-3 text-[10px] text-slate-400 font-medium">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-slate-200" /> Page View
+                  <span className="w-5 h-5 rounded-md bg-slate-50 flex items-center justify-center"><Eye size={10} className="text-slate-400" /></span>
+                  Page View
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-brand-300" /> Enquiry
+                  <span className="w-5 h-5 rounded-md bg-brand-50 flex items-center justify-center"><FileText size={10} className="text-brand-600" /></span>
+                  Enquiry
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-green-300" /> Email
+                  <span className="w-5 h-5 rounded-md bg-emerald-50 flex items-center justify-center"><Mail size={10} className="text-emerald-600" /></span>
+                  Email
                 </span>
               </div>
             </div>
-            {reversedEvents.map((ev, i) => (
-              <TimelineItem key={i} event={ev} isLast={i === reversedEvents.length - 1} />
-            ))}
+
+            {/* Engagement summary strip */}
+            <div className="flex items-center gap-3 mt-4 mb-5 p-3 bg-slate-50 rounded-xl">
+              <div className="flex-1">
+                <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mb-1.5">Engagement over time</div>
+                <div className="flex h-1.5 rounded-full overflow-hidden gap-px">
+                  {prospect.events.map((ev, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 rounded-full"
+                      style={{
+                        background: isConversion(ev.type)
+                          ? '#6366f1'
+                          : ev.type === 'email_open'
+                            ? '#10b981'
+                            : ev.scroll && ev.scroll >= 80
+                              ? '#334155'
+                              : ev.scroll && ev.scroll >= 50
+                                ? '#94a3b8'
+                                : '#cbd5e1',
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="border-l border-slate-200 pl-3 flex gap-4">
+                <div className="text-center">
+                  <div className="text-sm font-bold text-slate-900">
+                    {prospect.events.filter((e) => e.type === 'page_view').length}
+                  </div>
+                  <div className="text-[10px] text-slate-400">Views</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-brand-600">
+                    {prospect.events.filter((e) => isConversion(e.type)).length}
+                  </div>
+                  <div className="text-[10px] text-slate-400">Actions</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Grouped timeline */}
+            <div className="space-y-5">
+              {timelineGroups.map((group, gi) => (
+                <div key={gi}>
+                  {gi > 0 && (
+                    <TimelineGap
+                      fromTime={timelineGroups[gi - 1].label}
+                      toTime={group.label}
+                    />
+                  )}
+                  <TimelineGroup group={group} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
