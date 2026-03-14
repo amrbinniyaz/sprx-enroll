@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Phone, Calendar, Mail, Sparkles, Eye, FileText, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react'
+import InfoPopover from '../components/InfoPopover'
 import { motion } from 'framer-motion'
 import { PROSPECTS } from '../data/prospects'
 import { getBand, getPattern } from '../lib/utils'
@@ -475,7 +476,20 @@ export default function ProspectProfile({ onToast }) {
             {/* Header */}
             <div className="flex items-center justify-between mb-1">
               <div>
-                <h3 className="font-display text-lg text-slate-900 italic">Interaction Timeline</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-display text-lg text-slate-900 italic">Interaction Timeline</h3>
+                  <InfoPopover
+                    title="How the Interaction Timeline works"
+                    steps={[
+                      { source: 'Tracking Script', detail: 'A small JavaScript snippet on the school website silently records every page view, scroll depth, click, and download' },
+                      { source: 'Anonymous Tracking', detail: 'Before the parent identifies themselves, all activity is stored against an anonymous cookie ID' },
+                      { source: 'Identity Stitching', detail: 'When the parent submits an enquiry form, all their anonymous browsing history is retroactively linked to their real identity' },
+                      { source: 'Session Grouping', detail: 'Individual page views are grouped into visit sessions so you can see each browsing session as a whole' },
+                      { source: 'AI Annotations', detail: 'The system analyses behaviour patterns and flags key moments — like repeated fee page visits or long gaps between sessions' },
+                      { source: 'Score Badges', detail: 'Each action shows how many engagement points it contributed, so you can see exactly what drove the score' },
+                    ]}
+                  />
+                </div>
                 <p className="text-xs text-slate-400 mt-0.5">
                   {prospect.events.length} events &middot; {prospect.createdAt} to now
                 </p>
