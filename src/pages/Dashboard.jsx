@@ -7,6 +7,8 @@ import Avatar from '../components/Avatar'
 import BandPill from '../components/BandPill'
 import PatternPill from '../components/PatternPill'
 import AcquisitionInsights from '../components/AcquisitionInsights'
+import { DashboardSkeleton } from '../components/Skeleton'
+import { usePageLoad } from '../hooks/usePageLoad'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } }
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } } }
@@ -48,7 +50,10 @@ function StatCard({ label, value, sub, color, emoji, trend }) {
 }
 
 export default function Dashboard() {
+  const loading = usePageLoad(900)
   const navigate = useNavigate()
+
+  if (loading) return <DashboardSkeleton />
   const hot = PROSPECTS.filter((p) => p.band === 'hot')
   const warm = PROSPECTS.filter((p) => p.band === 'warm')
   const avg = Math.round(PROSPECTS.reduce((s, p) => s + p.score, 0) / PROSPECTS.length)

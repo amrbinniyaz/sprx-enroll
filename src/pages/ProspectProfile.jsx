@@ -1,13 +1,17 @@
 import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Phone, Calendar, Mail, Sparkles, Eye, FileText, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Phone, Calendar, Mail, Sparkles, Eye, FileText, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PROSPECTS } from '../data/prospects'
 import { getBand, getPattern } from '../lib/utils'
 import ScoreRing from '../components/ScoreRing'
+import ProbabilityRing from '../components/ProbabilityRing'
 import Avatar from '../components/Avatar'
 import BandPill from '../components/BandPill'
 import AcquisitionCard from '../components/AcquisitionCard'
+import HubSpotCard from '../components/HubSpotCard'
+import { ProfileSkeleton } from '../components/Skeleton'
+import { usePageLoad } from '../hooks/usePageLoad'
 
 const EVENT_STYLES = {
   page_view: { icon: Eye, bg: 'bg-slate-50 text-slate-400', label: 'Viewed' },
@@ -25,34 +29,59 @@ function parseTimeToMs(timeStr) {
   return 0
 }
 
-function groupEventsByPeriod(events) {
-  const groups = []
+function groupEventsIntoSessions(events) {
+  const sessions = []
   let current = null
 
   events.forEach((ev) => {
     const label = ev.time
     if (!current || current.label !== label) {
-      current = { label, events: [] }
-      groups.push(current)
+      current = { label, events: [], totalDuration: 0, pageCount: 0 }
+      sessions.push(current)
     }
     current.events.push(ev)
+    if (ev.type === 'page_view') {
+      current.pageCount++
+      if (ev.duration) {
+        const parts = ev.duration.split(':')
+        current.totalDuration += parseInt(parts[0]) * 60 + parseInt(parts[1])
+      }
+    }
   })
 
-  return groups
+  return sessions
 }
 
-function TimelineGap({ fromTime, toTime }) {
+function formatSessionDuration(seconds) {
+  if (seconds <= 0) return null
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins}m ${secs.toString().padStart(2, '0')}s`
+}
+
+function TimelineGap({ fromTime, toTime, hasEnquiry }) {
   const fromMs = parseTimeToMs(fromTime)
   const toMs = parseTimeToMs(toTime)
   const diffDays = Math.round(Math.abs(toMs - fromMs) / 86400000)
   if (diffDays < 2) return null
 
+  const insight = hasEnquiry && diffDays >= 5
+    ? '80% of families revisit within 3 days after enquiring'
+    : diffDays >= 10
+      ? 'Extended silence — re-engagement may be needed'
+      : null
+
   return (
-    <div className="flex items-center gap-3 py-2 px-1">
+    <div className="flex items-center gap-3 py-3 ml-3">
       <div className="flex-1 border-t border-dashed border-slate-200" />
-      <span className="text-[10px] text-slate-300 font-medium tracking-wide uppercase whitespace-nowrap">
-        {diffDays} days quiet
-      </span>
+      <div className="text-center">
+        <span className="text-[10px] text-slate-300 font-bold tracking-wide uppercase whitespace-nowrap">
+          {diffDays} days quiet
+        </span>
+        {insight && (
+          <div className="text-[9px] text-amber-500 font-medium mt-0.5 italic">{insight}</div>
+        )}
+      </div>
       <div className="flex-1 border-t border-dashed border-slate-200" />
     </div>
   )
@@ -72,66 +101,115 @@ function ScrollBar({ scroll }) {
           }}
         />
       </div>
-      <span className="text-[10px] text-slate-400">{scroll}%</span>
+      <span className="text-[10px] text-slate-400">scrolled {scroll}%</span>
     </div>
   )
 }
 
-function TimelineEvent({ event }) {
+function ScoreChange({ change }) {
+  if (!change) return null
+  const isPositive = change.startsWith('+')
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+      isPositive
+        ? 'bg-emerald-50 text-emerald-600'
+        : 'bg-red-50 text-red-500'
+    }`}>
+      {isPositive
+        ? <TrendingUp size={9} />
+        : <TrendingDown size={9} />
+      }
+      {change}
+    </span>
+  )
+}
+
+function AIInsight({ text }) {
+  if (!text) return null
+  return (
+    <div className="flex items-start gap-1.5 mt-1.5 ml-0.5">
+      <Sparkles size={10} className="text-brand-400 flex-shrink-0 mt-0.5" />
+      <span className="text-[11px] text-brand-600 italic leading-snug">{text}</span>
+    </div>
+  )
+}
+
+function TimelineEvent({ event, isLast }) {
   const style = EVENT_STYLES[event.type] || EVENT_STYLES.page_view
   const Icon = style.icon
   const conversion = isConversion(event.type)
 
-  if (conversion) {
-    return (
-      <div className="flex gap-3.5 items-start">
+  return (
+    <div className="flex gap-0 items-stretch">
+      {/* Vertical connector line + icon */}
+      <div className="flex flex-col items-center flex-shrink-0 w-7">
         <div
-          className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${style.bg} ring-2 ring-white shadow-sm`}
+          className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 z-10 ${style.bg} ${
+            conversion ? 'ring-2 ring-white shadow-sm' : ''
+          }`}
         >
           <Icon size={13} />
         </div>
-        <div className="flex-1 min-w-0 bg-gradient-to-r from-brand-50/60 to-transparent rounded-xl px-3.5 py-2.5 -ml-0.5 border border-brand-100/40">
-          <div className="text-[13px] font-bold text-slate-900">{event.title}</div>
-          <div className="text-[10px] text-brand-600 font-bold mt-0.5 uppercase tracking-wider">
-            Conversion event
-          </div>
-        </div>
+        {!isLast && (
+          <div className="w-px flex-1 bg-slate-100 mt-1" />
+        )}
       </div>
-    )
-  }
 
-  return (
-    <div className="flex gap-3.5 items-start">
-      <div
-        className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${style.bg}`}
-      >
-        <Icon size={13} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-[13px] font-medium text-slate-700">{event.title}</span>
-          {event.duration && (
-            <span className="text-[11px] text-slate-400">{event.duration}</span>
-          )}
-        </div>
-        <ScrollBar scroll={event.scroll} />
+      {/* Content */}
+      <div className="flex-1 min-w-0 ml-3 pb-4">
+        {conversion ? (
+          <div className="bg-gradient-to-r from-brand-50/60 to-transparent rounded-xl px-3.5 py-2.5 border border-brand-100/40">
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] font-bold text-slate-900">{event.title}</span>
+              <ScoreChange change={event.scoreChange} />
+            </div>
+            <div className="text-[10px] text-brand-600 font-bold mt-0.5 uppercase tracking-wider">
+              Conversion event
+            </div>
+            <AIInsight text={event.aiInsight} />
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] font-medium text-slate-700">{event.title}</span>
+              {event.duration && (
+                <span className="text-[11px] text-slate-400">{event.duration}</span>
+              )}
+              <ScoreChange change={event.scoreChange} />
+            </div>
+            <ScrollBar scroll={event.scroll} />
+            <AIInsight text={event.aiInsight} />
+          </>
+        )}
       </div>
     </div>
   )
 }
 
-function TimelineGroup({ group }) {
+function SessionGroup({ session, allEventsFlat }) {
+  const hasMultiplePages = session.pageCount > 1
+  const durationStr = formatSessionDuration(session.totalDuration)
+
   return (
     <div>
       <div className="flex items-center gap-2.5 mb-3">
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">
-          {group.label}
+          {session.label}
         </span>
+        {hasMultiplePages && (
+          <span className="text-[10px] text-slate-300 font-medium">
+            {session.pageCount} pages{durationStr ? ` · ${durationStr}` : ''}
+          </span>
+        )}
         <div className="flex-1 h-px bg-slate-100" />
       </div>
-      <div className="space-y-3 ml-0.5">
-        {group.events.map((ev, i) => (
-          <TimelineEvent key={i} event={ev} />
+      <div className="ml-0.5">
+        {session.events.map((ev, i) => (
+          <TimelineEvent
+            key={i}
+            event={ev}
+            isLast={i === session.events.length - 1}
+          />
         ))}
       </div>
     </div>
@@ -143,13 +221,18 @@ export default function ProspectProfile({ onToast }) {
   const navigate = useNavigate()
   const prospect = PROSPECTS.find((p) => p.id === Number(id))
 
+  const loading = usePageLoad(600)
   const [notes, setNotes] = useState(prospect?.notes || '')
   const [status, setStatus] = useState(prospect?.status || 'active')
 
-  const timelineGroups = useMemo(
-    () => (prospect ? groupEventsByPeriod([...prospect.events].reverse()) : []),
+  const timelineSessions = useMemo(
+    () => (prospect ? groupEventsIntoSessions([...prospect.events].reverse()) : []),
     [prospect]
   )
+
+  const hasEnquiry = prospect?.events.some((e) => e.type === 'form_submit')
+
+  if (loading) return <ProfileSkeleton />
 
   if (!prospect) {
     return (
@@ -188,7 +271,16 @@ export default function ProspectProfile({ onToast }) {
         <div className="flex gap-6">
           <div className="flex flex-col items-center gap-3 flex-shrink-0">
             <Avatar name={prospect.name} size="w-16 h-16 text-xl" />
-            <ScoreRing score={prospect.score} band={prospect.band} size={100} />
+            <div className="flex gap-3 items-end">
+              <div className="text-center">
+                <ScoreRing score={prospect.score} band={prospect.band} size={90} />
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Engagement</div>
+              </div>
+              <div className="text-center">
+                <ProbabilityRing probability={prospect.enrolmentProbability} confidence={prospect.probabilityConfidence} size={90} />
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Enrolment</div>
+              </div>
+            </div>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">
@@ -290,6 +382,49 @@ export default function ProspectProfile({ onToast }) {
               {prospect.aiSummary}
             </p>
           </div>
+
+          {/* Enrolment Probability Factors */}
+          {prospect.probabilityFactors && (
+            <div className="bg-white rounded-2xl border border-slate-100/60 p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="text-sm font-bold text-slate-900">Enrolment Probability</div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">
+                    {prospect.similarEnrolled} similar families enrolled · {prospect.probabilityConfidence} confidence
+                  </div>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${
+                  prospect.probabilityConfidence === 'high'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                    : prospect.probabilityConfidence === 'medium'
+                      ? 'bg-amber-50 text-amber-700 border border-amber-100'
+                      : 'bg-slate-50 text-slate-600 border border-slate-200'
+                }`}>
+                  {prospect.probabilityConfidence}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {prospect.probabilityFactors.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className={`w-4 h-4 rounded-md flex items-center justify-center text-xs flex-shrink-0 ${
+                      f.positive
+                        ? 'bg-emerald-50 text-emerald-600'
+                        : 'bg-red-50 text-red-500'
+                    }`}>
+                      {f.positive ? '+' : '−'}
+                    </span>
+                    <span className="text-xs text-slate-600">{f.factor}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 pt-3 border-t border-slate-100/60 text-[11px] text-slate-400 italic">
+                Based on 3 years of historical enrolment data from HubSpot
+              </div>
+            </div>
+          )}
+
+          {/* HubSpot CRM Data */}
+          <HubSpotCard hubspot={prospect.hubspot} />
 
           {/* GA4 Acquisition Data */}
           <AcquisitionCard ga4={prospect.ga4} />
@@ -401,17 +536,18 @@ export default function ProspectProfile({ onToast }) {
               </div>
             </div>
 
-            {/* Grouped timeline */}
-            <div className="space-y-5">
-              {timelineGroups.map((group, gi) => (
-                <div key={gi}>
-                  {gi > 0 && (
+            {/* Session-grouped timeline */}
+            <div className="space-y-2">
+              {timelineSessions.map((session, si) => (
+                <div key={si}>
+                  {si > 0 && (
                     <TimelineGap
-                      fromTime={timelineGroups[gi - 1].label}
-                      toTime={group.label}
+                      fromTime={timelineSessions[si - 1].label}
+                      toTime={session.label}
+                      hasEnquiry={hasEnquiry}
                     />
                   )}
-                  <TimelineGroup group={group} />
+                  <SessionGroup session={session} />
                 </div>
               ))}
             </div>

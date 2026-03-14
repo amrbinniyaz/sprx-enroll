@@ -7,6 +7,8 @@ import { getBand, cn } from '../lib/utils'
 import Avatar from '../components/Avatar'
 import BandPill from '../components/BandPill'
 import PatternPill from '../components/PatternPill'
+import { ProspectListSkeleton } from '../components/Skeleton'
+import { usePageLoad } from '../hooks/usePageLoad'
 
 const BAND_FILTERS = [
   { key: 'all', label: 'All' },
@@ -38,6 +40,9 @@ export default function ProspectList() {
       return 0
     })
   }, [query, bandFilter, sortBy])
+
+  const loading = usePageLoad(700)
+  if (loading) return <ProspectListSkeleton />
 
   return (
     <motion.div

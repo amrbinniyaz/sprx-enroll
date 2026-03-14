@@ -10,12 +10,14 @@ import ProspectList from './pages/ProspectList'
 import ProspectProfile from './pages/ProspectProfile'
 import Alerts from './pages/Alerts'
 import Settings from './pages/Settings'
+import RevenueIntelligence from './pages/RevenueIntelligence'
 import AIChat from './components/AIChat'
 
 const PAGE_TITLES = {
   '/': 'Dashboard',
   '/prospects': 'Prospects',
   '/alerts': 'Alerts',
+  '/revenue': 'Revenue Intelligence',
   '/settings': 'Settings',
 }
 
@@ -54,6 +56,7 @@ export default function App() {
               element={<ProspectProfile onToast={showToast} />}
             />
             <Route path="/alerts" element={<Alerts onToast={showToast} />} />
+            <Route path="/revenue" element={<RevenueIntelligence />} />
             <Route path="/settings" element={<Settings onToast={showToast} />} />
           </Routes>
         </main>

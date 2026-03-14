@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Users, Bell, Settings, LogOut, ChevronDown } from 'lucide-react'
+import { LayoutDashboard, Users, Bell, PoundSterling, Settings, LogOut, ChevronDown } from 'lucide-react'
 import { SCHOOL } from '../data/prospects'
 import { cn } from '../lib/utils'
 import logo from '../assets/logo.png'
@@ -9,6 +9,7 @@ const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/prospects', label: 'Prospects', icon: Users },
   { to: '/alerts', label: 'Alerts', icon: Bell },
+  { to: '/revenue', label: 'Revenue', icon: PoundSterling },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
