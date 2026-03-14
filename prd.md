@@ -103,7 +103,7 @@ Basic admissions pipeline tool
 No website tracking, no AI, no revenue forecasting
 
 Positioning
-SprX EnrollIQ is not a CRM replacement. It is the full-funnel intelligence layer that sits between the school website and HubSpot CRM — capturing the pre-enquiry journey, enriching CRM data with behavioural signals, and closing the attribution loop from first click to enrolled fee income. No other tool in the independent schools market does this.
+SprX EnrollIQ is not a CRM replacement. It is the full-funnel intelligence layer that sits between the school website and HubSpot CRM — capturing the pre-enquiry journey, enriching CRM data with behavioural signals, and closing the attribution loop from first click to enrolled fee income. Its Website Intelligence feature goes further — using actual prospect behaviour data to tell schools what to fix on their website to convert more families. No other tool in the independent schools market does this.
 
 6. Goals & Success Metrics
 Business Goals
@@ -157,7 +157,7 @@ Hot prospect email alerts to admissions team
 Single school dashboard (one login per school)
 Basic nurture email sequences via Resend API
 Claude API-powered prospect summaries and call suggestions
-V1.5 — HubSpot Revenue Intelligence (In Scope)
+V1.5 — HubSpot Revenue Intelligence & Website Intelligence (In Scope)
 HubSpot CRM API integration (Contacts, Deals, Communications)
 Closed-loop revenue attribution (first click → enrolled fee income)
 Enrolment funnel visualisation (website visitor → enrolled student)
@@ -169,6 +169,9 @@ Family lifetime value calculation (multi-child, multi-year)
 Revenue Intelligence dashboard page
 HubSpot CRM data card on prospect profiles
 Deal stage pipeline visualisation per prospect
+Website Intelligence — health score, content gap detection, recommendations engine
+Enrolled vs non-enrolled journey comparison
+Website recommendation tracking (new / acknowledged / actioned)
 Out of Scope (V2+)
 Multi-user team accounts with roles
 Native iSAMS / OpenApply integration
@@ -456,6 +459,14 @@ Form field mapping (map school's enquiry form fields to SprX EnrollIQ fields)
 GA4 property ID connection and sync status
 HubSpot API connection, sync status, and deal stage mapping
 Team email addresses for alerts
+Page 6 — Website Intelligence
+Website Health Score (0–100) with component breakdown
+Priority recommendations with actionable detail
+Enrolled vs non-enrolled journey comparison
+Content gap detection panel
+Page engagement heatmap (top pages by time, scroll depth, exits)
+Mobile vs desktop comparison
+Health score trend over time
 Design Requirements
 Mobile responsive
 Load time <2 seconds
@@ -549,7 +560,66 @@ Campaign attribution requires GA4 + HubSpot + SprX EnrollIQ all connected
 Competitor analysis requires minimum 6 months of historical HubSpot deal data
 Export revenue forecast as PDF for board reports (V2)
 
-8.11 Nurture Email Sequences
+8.11 Website Intelligence
+Description A data-driven website audit and recommendation engine that analyses prospect browsing behaviour to identify content gaps, navigation issues, and conversion blockers on the school's website. By comparing the journeys of families who enrolled against those who didn't, Website Intelligence tells schools exactly what to fix on their website to convert more families.
+How It Works
+SprX EnrollIQ already tracks every page view, scroll depth, click, and session across the school website. Website Intelligence aggregates this data to surface actionable patterns:
+1. Compare enrolled vs non-enrolled families — identify which pages, content, and journeys correlate with successful enrolment
+2. Detect missing content — if prospects repeatedly search for or navigate towards content that doesn't exist (e.g. fees, bursaries, bus routes), flag it
+3. Identify drop-off points — pages where prospects leave the site or disengage, indicating poor content or UX
+4. Benchmark engagement — compare the school's website engagement metrics against anonymised benchmarks from the SprX portfolio (V2)
+Website Health Score
+An overall score (0–100) reflecting how well the school's website supports the admissions journey. Composed of:
+Component | Weight | Measures
+Content completeness | 30% | Do key admissions pages exist and contain sufficient detail?
+Navigation effectiveness | 20% | Can prospects find key pages within 2 clicks?
+Engagement depth | 25% | Average scroll depth, time on page, pages per session
+Mobile experience | 15% | Mobile bounce rate, mobile session duration vs desktop
+Conversion path clarity | 10% | Is the journey from landing page to enquiry form clear and short?
+Recommendation Categories
+Priority | Type | Example
+High | Missing content | "73% of visitors search for 'fees' but no dedicated fees page exists — schools with visible fees convert 2x better"
+High | Thin content | "Average time on your admissions page is 18 seconds — this suggests insufficient detail. Add entry requirements, key dates, and a clear call to action"
+High | Conversion blockers | "Your enquiry form is 4 clicks deep from the homepage — move it to 2 clicks or add a sticky CTA"
+Medium | Mobile issues | "68% of parents browse on mobile but your mobile bounce rate is 3x desktop — investigate mobile layout"
+Medium | Missing media | "Schools with virtual tour content see 40% more open day bookings — consider adding a virtual tour"
+Medium | Buried content | "Your prospectus download is 3 clicks deep — it's your most downloaded asset, make it prominent"
+Low | Navigation | "23% of visitors use site search for 'scholarships' — add it to your main navigation"
+Low | Engagement | "Your staff profiles page has high engagement (4.2 min avg) but low discoverability — promote it on the homepage"
+Enrolled vs Non-Enrolled Analysis
+The most powerful insight: comparing the website journeys of families who enrolled against those who didn't.
+Enrolled families typically: | Non-enrolled families typically:
+Visited fees page (92%) | Left after 2 pages (70%)
+Viewed admissions process (88%) | Never found fees page (65%)
+Watched virtual tour (76%) | Short sessions under 1 minute (58%)
+Booked open day online (71%) | Never saw admissions process (54%)
+Visited staff profiles (65%) | Visited homepage only (48%)
+Output: "Families who don't find your fees and admissions pages within their first visit are 4x less likely to enrol. Make these pages more prominent in your navigation."
+Functional Requirements
+Calculate and display Website Health Score (0–100) with breakdown by component
+Generate prioritised recommendations based on actual visitor behaviour data
+Compare enrolled vs non-enrolled family journeys (requires HubSpot integration and minimum 20 historical outcomes)
+Detect missing or thin content pages based on search queries, navigation patterns, and exit pages
+Identify mobile-specific issues by comparing mobile vs desktop engagement metrics
+Track recommendation status (new / acknowledged / actioned / dismissed)
+Refresh recommendations weekly based on latest behavioural data
+Display before/after metrics when a recommendation is actioned (e.g. "Since adding a fees page, fee-page views increased 340% and enquiry rate increased 12%")
+Dashboard Page
+Page 6 — Website Intelligence
+Website Health Score with component breakdown ring chart
+Priority recommendations list with actionable detail
+Enrolled vs non-enrolled journey comparison (visual flow)
+Content gap detection panel
+Page-level engagement heatmap (top pages by time, scroll, exits)
+Mobile vs desktop comparison metrics
+Trend chart showing Website Health Score over time
+Data Requirements
+Minimum 30 days of tracking data to generate initial recommendations
+Minimum 20 historical enrolled/lost outcomes (from HubSpot) for enrolled vs non-enrolled analysis
+Recommendations improve in accuracy and specificity as more data accumulates
+Note: Website Intelligence is a unique differentiator — no other admissions tool analyses school website content effectiveness using actual prospect behaviour data. This feature positions SprX EnrollIQ not just as an admissions tool but as a website optimisation advisor, increasing its value proposition and stickiness.
+
+8.12 Nurture Email Sequences
 Description Automated, behaviour-triggered email sequences sent to prospects on behalf of the school.
 Sequences (MVP)
 Trigger
@@ -752,7 +822,7 @@ Scoring engine
 Dashboard: Pipeline Overview, Prospect List, Prospect Profile
 Email alerts (Resend)
 Claude API summaries
-V1.5 — Revenue Intelligence (Months 4–6)
+V1.5 — Revenue Intelligence & Website Intelligence (Months 4–6)
 HubSpot CRM integration (contacts, deals, communications)
 HubSpot deal stage visualisation on prospect profiles
 Closed-loop revenue attribution (campaign → enrolled revenue)
@@ -762,6 +832,9 @@ Pipeline revenue forecast
 Competitor loss intelligence
 Family lifetime value calculation
 Revenue Intelligence dashboard page
+Website Intelligence — health score, recommendations, content gap detection
+Enrolled vs non-enrolled journey comparison
+Recommendation tracking and before/after impact metrics
 Nurture email sequences
 Score decay and going-cold alerts
 Pattern detection flags

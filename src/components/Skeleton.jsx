@@ -201,6 +201,63 @@ export function ProfileSkeleton() {
   )
 }
 
+/* ─── Website Intelligence Skeleton ─── */
+export function WebsiteIntelligenceSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      <div>
+        <Bone className="h-9 w-64 mb-2" />
+        <Bone className="h-5 w-96" />
+      </div>
+
+      {/* Metric cards */}
+      <div className="grid grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <SkeletonCard key={i}>
+            <Bone className="h-3 w-24 mb-4" />
+            <Bone className="h-8 w-16 mb-2" />
+            <Bone className="h-3 w-28" />
+          </SkeletonCard>
+        ))}
+      </div>
+
+      {/* Health + trend */}
+      <div className="grid grid-cols-3 gap-5">
+        <SkeletonCard>
+          <Bone className="h-5 w-40 mb-5" />
+          <Bone round className="w-[180px] h-[180px] mx-auto mb-4" />
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-3 mb-2.5">
+              <Bone className="h-3 w-28" />
+              <Bone className="h-2.5 flex-1 rounded-full" />
+              <Bone className="h-3 w-8" />
+            </div>
+          ))}
+        </SkeletonCard>
+        <div className="col-span-2 space-y-5">
+          <SkeletonCard>
+            <Bone className="h-5 w-36 mb-4" />
+            <Bone className="h-[180px] w-full rounded-xl" />
+          </SkeletonCard>
+          <SkeletonCard>
+            <Bone className="h-5 w-40 mb-4" />
+            <div className="grid grid-cols-3 gap-4">
+              {[...Array(3)].map((_, i) => (
+                <Bone key={i} className="h-[140px] rounded-xl" />
+              ))}
+            </div>
+          </SkeletonCard>
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      {[...Array(4)].map((_, i) => (
+        <Bone key={i} className="h-20 w-full rounded-2xl" />
+      ))}
+    </div>
+  )
+}
+
 /* ─── Revenue Intelligence Skeleton ─── */
 export function RevenueSkeleton() {
   return (
