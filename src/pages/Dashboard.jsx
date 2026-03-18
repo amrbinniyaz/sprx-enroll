@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { ChevronRight, Flame, Eye, Snowflake, FileText, Mail, MousePointerClick, ArrowUpRight } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { PROSPECTS, ACTIVITY_FEED } from '../data/prospects'
+import { ACTIVITY_FEED } from '../data/prospects'
+import { useProspects } from '../hooks/useProspects'
 import { getBand, getPattern } from '../lib/utils'
 import Avatar from '../components/Avatar'
 import BandPill from '../components/BandPill'
@@ -52,6 +53,7 @@ function StatCard({ label, value, sub, color, emoji, trend }) {
 export default function Dashboard() {
   const loading = usePageLoad(900)
   const navigate = useNavigate()
+  const { prospects: PROSPECTS } = useProspects()
 
   if (loading) return <DashboardSkeleton />
   const hot = PROSPECTS.filter((p) => p.band === 'hot')

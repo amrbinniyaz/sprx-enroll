@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Days - Alleyn's School</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Georgia, serif; color: #1e293b; line-height: 1.7; }
+    header { background: #1e293b; color: white; padding: 32px 40px 12px; text-align: center; }
+    header h1 { font-size: 2.5rem; margin-bottom: 4px; }
+    header .tagline { opacity: 0.7; font-size: 1rem; }
+    nav { background: #1e293b; border-top: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 0; z-index: 100; }
+    nav ul { list-style: none; display: flex; justify-content: center; max-width: 900px; margin: 0 auto; }
+    nav ul li a { display: block; padding: 14px 22px; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.95rem; transition: color 0.2s, background 0.2s; }
+    nav ul li a:hover, nav ul li a.active { color: #fff; background: rgba(255,255,255,0.1); }
+    .page-banner { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; text-align: center; padding: 60px 20px; }
+    .page-banner h2 { font-size: 2.4rem; margin-bottom: 12px; }
+    .page-banner p { font-size: 1.1rem; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+    section { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    section h2 { font-size: 1.8rem; margin-bottom: 16px; color: #1e293b; }
+    section h3 { font-size: 1.3rem; margin-bottom: 10px; color: #334155; margin-top: 28px; }
+    section p { color: #475569; margin-bottom: 16px; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 0; }
+    .alt-section { background: #f8fafc; }
+    .alt-section .inner { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    .event-cards { display: grid; gap: 24px; margin-top: 24px; }
+    .event-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 32px; display: flex; gap: 24px; align-items: flex-start; }
+    .event-date { flex-shrink: 0; background: #1e293b; color: white; border-radius: 12px; padding: 16px 20px; text-align: center; min-width: 90px; }
+    .event-date .month { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.8; }
+    .event-date .day { font-size: 2rem; font-weight: bold; line-height: 1.2; }
+    .event-date .year { font-size: 0.8rem; opacity: 0.6; }
+    .event-details h3 { margin-top: 0; font-size: 1.2rem; }
+    .event-details p { font-size: 0.95rem; margin-bottom: 8px; }
+    .event-tag { display: inline-block; background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-right: 8px; margin-bottom: 4px; }
+    .event-tag.full { background: #fee2e2; color: #991b1b; }
+    .event-tag.open { background: #d1fae5; color: #166534; }
+    .timeline { margin-top: 24px; }
+    .timeline-item { display: flex; gap: 20px; margin-bottom: 24px; }
+    .timeline-time { flex-shrink: 0; width: 100px; font-weight: bold; color: #1e293b; text-align: right; padding-top: 2px; }
+    .timeline-content { border-left: 3px solid #e2e8f0; padding-left: 20px; }
+    .timeline-content h3 { margin-top: 0; font-size: 1.1rem; }
+    .timeline-content p { font-size: 0.9rem; margin-bottom: 0; }
+    .checklist { list-style: none; margin-top: 16px; }
+    .checklist li { padding: 10px 0 10px 28px; border-bottom: 1px solid #f1f5f9; position: relative; color: #475569; }
+    .checklist li::before { content: "\2713"; position: absolute; left: 0; color: #1e293b; font-weight: bold; }
+    .highlight-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 24px; margin: 24px 0; }
+    .highlight-box h3 { color: #92400e; margin-top: 0; }
+    .highlight-box p { color: #78350f; margin-bottom: 0; }
+    .cta-link { display: inline-block; background: #1e293b; color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 1rem; margin-top: 12px; transition: background 0.2s; }
+    .cta-link:hover { background: #334155; }
+    .faq-item { margin-bottom: 24px; }
+    .faq-item h3 { margin-top: 0; }
+    footer { background: #1e293b; color: rgba(255,255,255,0.6); text-align: center; padding: 30px; font-size: 0.85rem; }
+    footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Alleyn's School</h1>
+  <p class="tagline">Founded 1619 &middot; Dulwich, London</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="test-school-site.html">Home</a></li>
+    <li><a href="test-admissions.html">Admissions</a></li>
+    <li><a href="test-fees.html">Fees</a></li>
+    <li><a href="test-school-life.html">School Life</a></li>
+    <li><a href="test-open-days.html" class="active">Open Days</a></li>
+    <li><a href="test-contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-banner">
+  <h2>Open Days</h2>
+  <p>The best way to discover Alleyn's is to visit us. Come and see the school in action, meet our staff and pupils, and experience our community first-hand.</p>
+</div>
+
+<section>
+  <h2>Upcoming Open Days</h2>
+  <p>We hold several Open Days throughout the year for prospective families. Please book in advance as places are limited.</p>
+
+  <div class="event-cards">
+    <div class="event-card">
+      <div class="event-date">
+        <div class="month">May</div>
+        <div class="day">16</div>
+        <div class="year">2026</div>
+      </div>
+      <div class="event-details">
+        <h3>Spring Open Morning</h3>
+        <p>A full open morning for families interested in Year 7 and Year 9 entry for September 2027. Tour the campus, meet department heads, and sit in on lessons.</p>
+        <span class="event-tag open">Booking Open</span>
+        <span class="event-tag">All Entry Points</span>
+      </div>
+    </div>
+
+    <div class="event-card">
+      <div class="event-date">
+        <div class="month">Jun</div>
+        <div class="day">20</div>
+        <div class="year">2026</div>
+      </div>
+      <div class="event-details">
+        <h3>Sixth Form Taster Day</h3>
+        <p>Designed specifically for students considering Alleyn's for A Levels. Sample lessons, meet current Sixth Formers, and learn about our university preparation programme.</p>
+        <span class="event-tag open">Booking Open</span>
+        <span class="event-tag">Sixth Form Only</span>
+      </div>
+    </div>
+
+    <div class="event-card">
+      <div class="event-date">
+        <div class="month">Sep</div>
+        <div class="day">19</div>
+        <div class="year">2026</div>
+      </div>
+      <div class="event-details">
+        <h3>Autumn Open Day</h3>
+        <p>Our main Open Day of the year. See the school at the start of a new academic year, with all facilities in full use and a buzz of activity across campus.</p>
+        <span class="event-tag open">Booking Open</span>
+        <span class="event-tag">All Entry Points</span>
+      </div>
+    </div>
+
+    <div class="event-card">
+      <div class="event-date">
+        <div class="month">Nov</div>
+        <div class="day">5</div>
+        <div class="year">2026</div>
+      </div>
+      <div class="event-details">
+        <h3>November Open Morning</h3>
+        <p>Final Open Day before the Year 7 registration deadline. An ideal opportunity for families who haven't yet visited.</p>
+        <span class="event-tag open">Booking Open</span>
+        <span class="event-tag">Year 7 Focus</span>
+      </div>
+    </div>
+
+    <div class="event-card">
+      <div class="event-date">
+        <div class="month">Jan</div>
+        <div class="day">23</div>
+        <div class="year">2027</div>
+      </div>
+      <div class="event-details">
+        <h3>Sixth Form Information Evening</h3>
+        <p>An evening event for Year 11 students and their parents. Presentations on A Level choices, university preparation, and life in the Sixth Form.</p>
+        <span class="event-tag">Coming Soon</span>
+        <span class="event-tag">Sixth Form Only</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<div class="alt-section">
+  <div class="inner">
+    <h2>What to Expect</h2>
+    <p>Our Open Days are designed to give you a genuine insight into life at Alleyn's. Here is a typical Open Day schedule.</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-time">9:15 am</div>
+        <div class="timeline-content">
+          <h3>Arrival &amp; Registration</h3>
+          <p>Arrive at the main entrance and collect your visitor badge and programme. Refreshments are served in the Great Hall.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">9:45 am</div>
+        <div class="timeline-content">
+          <h3>Welcome Talk</h3>
+          <p>The Headmaster gives a welcome talk covering the school's ethos, academic approach, and admissions process.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">10:15 am</div>
+        <div class="timeline-content">
+          <h3>Guided Campus Tour</h3>
+          <p>Sixth Form students lead small group tours of the campus, including classrooms, science labs, sports facilities, theatre, and art studios.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">11:00 am</div>
+        <div class="timeline-content">
+          <h3>Lesson Observations</h3>
+          <p>Observe live lessons across a range of subjects. See our teaching in action and get a feel for the learning environment.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">11:30 am</div>
+        <div class="timeline-content">
+          <h3>Subject Fair</h3>
+          <p>Meet department heads and teachers at our subject fair. Ask questions, see work on display, and explore our curriculum.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">12:00 pm</div>
+        <div class="timeline-content">
+          <h3>Q&amp;A Panel</h3>
+          <p>A panel of current parents, pupils, and teachers answer your questions about life at Alleyn's.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">12:30 pm</div>
+        <div class="timeline-content">
+          <h3>Informal Refreshments</h3>
+          <p>Enjoy refreshments and continue conversations with staff and current families in a relaxed setting.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2>What to Bring</h2>
+  <ul class="checklist">
+    <li>Comfortable shoes for walking around our 30-acre campus</li>
+    <li>A notepad and pen for any questions or observations</li>
+    <li>Your child is very welcome to attend with you</li>
+    <li>An umbrella (just in case &mdash; this is London!)</li>
+    <li>Any specific questions about admissions, bursaries, or school life</li>
+  </ul>
+
+  <h3>Getting Here</h3>
+  <p>Alleyn's School is located on Townley Road, Dulwich, London SE22 8SU. We are a 10-minute walk from North Dulwich station (Southern Rail) and well served by buses (P4, 37, 40, 176, 185).</p>
+  <p>Limited on-site parking is available for Open Day visitors. We recommend using public transport where possible. There is also pay-and-display parking on surrounding streets.</p>
+
+  <div class="highlight-box">
+    <h3>Can't Make an Open Day?</h3>
+    <p>We understand that not everyone can attend a scheduled Open Day. We are happy to arrange individual visits and tours by appointment on school days. Please contact our admissions office to arrange a personal visit.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>Private Tours</h2>
+  <p>If you are unable to attend one of our scheduled Open Days, we are delighted to offer private tours by appointment. These typically last around 90 minutes and include a meeting with a member of the Senior Leadership Team.</p>
+  <p>Private tours are available on most school days during term time, subject to availability. We recommend booking at least two weeks in advance.</p>
+
+  <a href="test-contact.html" class="cta-link">Book a Visit</a>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>Open Day FAQs</h2>
+
+  <div class="faq-item">
+    <h3>Do I need to book in advance?</h3>
+    <p>Yes, all Open Days must be booked in advance. Places are limited and events often fill up quickly, so we recommend booking as early as possible.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Can I bring my child?</h3>
+    <p>Absolutely. We encourage you to bring your child along. They will have the chance to meet current pupils, see the facilities, and get a feel for the school.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Is there wheelchair access?</h3>
+    <p>Yes, our campus is fully accessible. Please let us know in advance if you have any specific access requirements so we can ensure your visit is comfortable.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>How long does an Open Day last?</h3>
+    <p>Open Days typically run from 9:15am to 12:30pm (approximately 3 hours). You are welcome to leave earlier if you need to, but we recommend staying for the full programme.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>Can I speak to the Headmaster?</h3>
+    <p>The Headmaster attends all Open Days and is available for informal conversations during the refreshments period. For a more in-depth discussion, you may request a private meeting through the admissions office.</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Alleyn's School &middot; Townley Road, Dulwich, London SE22 8SU</p>
+  <p style="margin-top: 8px;"><a href="test-contact.html">Contact Us</a> &middot; <a href="test-admissions.html">Admissions</a> &middot; <a href="test-fees.html">Fees</a></p>
+  <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.5;">This is a test page for EnrollIQ tracking.</p>
+</footer>
+
+<script src="/track.js" data-school-id="ALS-8K4MN2PLX1" data-api-key="phc_ePDq2bcqyv47EmSM5Xh0YvpwYwO2OqWoijNiyqGZ9Qk"></script>
+
+</body>
+</html>

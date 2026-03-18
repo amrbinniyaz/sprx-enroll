@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Life - Alleyn's School</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Georgia, serif; color: #1e293b; line-height: 1.7; }
+    header { background: #1e293b; color: white; padding: 32px 40px 12px; text-align: center; }
+    header h1 { font-size: 2.5rem; margin-bottom: 4px; }
+    header .tagline { opacity: 0.7; font-size: 1rem; }
+    nav { background: #1e293b; border-top: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 0; z-index: 100; }
+    nav ul { list-style: none; display: flex; justify-content: center; max-width: 900px; margin: 0 auto; }
+    nav ul li a { display: block; padding: 14px 22px; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.95rem; transition: color 0.2s, background 0.2s; }
+    nav ul li a:hover, nav ul li a.active { color: #fff; background: rgba(255,255,255,0.1); }
+    .page-banner { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; text-align: center; padding: 60px 20px; }
+    .page-banner h2 { font-size: 2.4rem; margin-bottom: 12px; }
+    .page-banner p { font-size: 1.1rem; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+    section { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    section h2 { font-size: 1.8rem; margin-bottom: 16px; color: #1e293b; }
+    section h3 { font-size: 1.3rem; margin-bottom: 10px; color: #334155; margin-top: 28px; }
+    section p { color: #475569; margin-bottom: 16px; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 0; }
+    .alt-section { background: #f8fafc; }
+    .alt-section .inner { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 24px; }
+    .gallery-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+    .gallery-card .img-placeholder { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+    .gallery-card .caption { padding: 16px; }
+    .gallery-card .caption h3 { margin-top: 0; font-size: 1.1rem; margin-bottom: 6px; }
+    .gallery-card .caption p { font-size: 0.9rem; color: #64748b; margin-bottom: 0; }
+    .sport-bg { background: #dbeafe; }
+    .drama-bg { background: #fce7f3; }
+    .music-bg { background: #fef3c7; }
+    .clubs-bg { background: #d1fae5; }
+    .art-bg { background: #ede9fe; }
+    .outdoor-bg { background: #ffedd5; }
+    .feature-list { list-style: none; margin-top: 16px; }
+    .feature-list li { padding: 10px 0 10px 28px; border-bottom: 1px solid #f1f5f9; position: relative; color: #475569; }
+    .feature-list li::before { content: "\2713"; position: absolute; left: 0; color: #1e293b; font-weight: bold; }
+    .quote-box { background: #f8fafc; border-left: 4px solid #1e293b; padding: 24px; margin: 24px 0; border-radius: 0 12px 12px 0; }
+    .quote-box p { font-style: italic; color: #475569; margin-bottom: 8px; }
+    .quote-box .author { font-style: normal; font-weight: bold; color: #1e293b; font-size: 0.9rem; }
+    .cta-link { display: inline-block; background: #1e293b; color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 1rem; margin-top: 12px; transition: background 0.2s; }
+    .cta-link:hover { background: #334155; }
+    footer { background: #1e293b; color: rgba(255,255,255,0.6); text-align: center; padding: 30px; font-size: 0.85rem; }
+    footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Alleyn's School</h1>
+  <p class="tagline">Founded 1619 &middot; Dulwich, London</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="test-school-site.html">Home</a></li>
+    <li><a href="test-admissions.html">Admissions</a></li>
+    <li><a href="test-fees.html">Fees</a></li>
+    <li><a href="test-school-life.html" class="active">School Life</a></li>
+    <li><a href="test-open-days.html">Open Days</a></li>
+    <li><a href="test-contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-banner">
+  <h2>School Life</h2>
+  <p>Education at Alleyn's extends far beyond the classroom. Discover the rich co-curricular life that makes our school unique.</p>
+</div>
+
+<section>
+  <h2>Beyond the Classroom</h2>
+  <p>At Alleyn's, we believe passionately that a great education is about more than academic results. Our extraordinary co-curricular programme offers over 100 clubs, societies, and activities, ensuring every pupil can discover and develop their unique talents and interests.</p>
+  <p>From the sports field to the stage, from the science lab to the art studio, Alleyn's pupils have the freedom to explore, experiment, and excel. Our dedicated staff give generously of their time to run activities before school, during lunchtimes, after school, and at weekends.</p>
+  <p>We are proud that the vast majority of our pupils participate in at least two co-curricular activities each week, and many are involved in far more. It is this breadth of experience that helps our pupils develop into confident, well-rounded individuals.</p>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>Sport</h2>
+  <p>Sport plays a central role in life at Alleyn's. Our 30-acre campus provides outstanding facilities, and we field competitive teams in a wide range of sports at local, regional, and national level.</p>
+
+  <div class="gallery-grid">
+    <div class="gallery-card">
+      <div class="img-placeholder sport-bg">&#9917;</div>
+      <div class="caption">
+        <h3>Football &amp; Rugby</h3>
+        <p>Boys' and girls' teams compete at county level. Full-size pitches and floodlit training areas.</p>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <div class="img-placeholder sport-bg">&#127946;</div>
+      <div class="caption">
+        <h3>Swimming</h3>
+        <p>25m indoor pool with dedicated coaching. Competitive galas and learn-to-swim programmes.</p>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <div class="img-placeholder sport-bg">&#127934;</div>
+      <div class="caption">
+        <h3>Cricket &amp; Tennis</h3>
+        <p>Six tennis courts and a cricket square. Summer term fixtures against leading schools.</p>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <div class="img-placeholder sport-bg">&#127939;</div>
+      <div class="caption">
+        <h3>Athletics &amp; Cross Country</h3>
+        <p>Full athletics track and cross country course through the school grounds and Dulwich Park.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Other Sports</h3>
+  <p>We also offer netball, hockey, basketball, badminton, fencing, rowing, water polo, and table tennis. Our sports scholars benefit from specialist coaching and strength and conditioning programmes.</p>
+</section>
+
+<hr class="divider">
+
+<div class="alt-section">
+  <div class="inner">
+    <h2>Drama &amp; Theatre</h2>
+    <p>Alleyn's has a long and distinguished tradition in drama, fitting for a school founded by the great Elizabethan actor Edward Alleyn. Our performing arts programme is one of the most vibrant in the country.</p>
+
+    <div class="gallery-grid">
+      <div class="gallery-card">
+        <div class="img-placeholder drama-bg">&#127917;</div>
+        <div class="caption">
+          <h3>Major Productions</h3>
+          <p>Two major productions each year in our 400-seat Edward Alleyn Theatre, from Shakespeare to contemporary drama.</p>
+        </div>
+      </div>
+      <div class="gallery-card">
+        <div class="img-placeholder drama-bg">&#127908;</div>
+        <div class="caption">
+          <h3>House Drama</h3>
+          <p>Every house stages a play in the annual House Drama competition, with pupils directing and producing.</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top: 20px;">Our purpose-built Edward Alleyn Theatre seats 400 and is equipped with professional lighting and sound. We also have a studio theatre for smaller, more experimental work. Drama is taught as a timetabled subject through to GCSE and A Level, and many of our alumni have gone on to careers on stage and screen.</p>
+
+    <div class="quote-box">
+      <p>"The drama department at Alleyn's gave me the confidence to pursue acting professionally. The facilities are world-class and the teaching is truly inspiring."</p>
+      <span class="author">&mdash; Former pupil, now West End performer</span>
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2>Music</h2>
+  <p>Music is at the heart of Alleyn's. With over 50 peripatetic music teachers, 20 ensembles, and hundreds of individual music lessons each week, we offer an exceptional music education to pupils of all abilities.</p>
+
+  <div class="gallery-grid">
+    <div class="gallery-card">
+      <div class="img-placeholder music-bg">&#127929;</div>
+      <div class="caption">
+        <h3>Orchestras &amp; Ensembles</h3>
+        <p>Symphony orchestra, chamber groups, jazz band, and string quartets for all levels.</p>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <div class="img-placeholder music-bg">&#127925;</div>
+      <div class="caption">
+        <h3>Choirs</h3>
+        <p>Chapel choir, chamber choir, and junior choir perform at school events and external venues.</p>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <div class="img-placeholder music-bg">&#127928;</div>
+      <div class="caption">
+        <h3>Rock &amp; Pop</h3>
+        <p>Battle of the Bands, rock school, and recording studio for aspiring musicians.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Concert Programme</h3>
+  <p>We hold over 60 concerts and recitals each year, from intimate lunchtime recitals in the chapel to major concerts at external venues including the Royal Festival Hall. Our annual Gala Concert is a highlight of the school calendar.</p>
+</section>
+
+<hr class="divider">
+
+<div class="alt-section">
+  <div class="inner">
+    <h2>Clubs &amp; Societies</h2>
+    <p>With over 100 clubs and societies, there truly is something for everyone at Alleyn's. Here is just a selection of what's on offer.</p>
+
+    <div class="gallery-grid">
+      <div class="gallery-card">
+        <div class="img-placeholder clubs-bg">&#129302;</div>
+        <div class="caption">
+          <h3>STEM &amp; Robotics</h3>
+          <p>Coding club, robotics team, science Olympiad preparation, and engineering challenges.</p>
+        </div>
+      </div>
+      <div class="gallery-card">
+        <div class="img-placeholder clubs-bg">&#128218;</div>
+        <div class="caption">
+          <h3>Debating &amp; Model UN</h3>
+          <p>Award-winning debating teams competing nationally. Annual Model UN conference.</p>
+        </div>
+      </div>
+      <div class="gallery-card">
+        <div class="img-placeholder art-bg">&#127912;</div>
+        <div class="caption">
+          <h3>Art &amp; Design</h3>
+          <p>Ceramics, photography, printmaking, textiles, and life drawing in purpose-built studios.</p>
+        </div>
+      </div>
+      <div class="gallery-card">
+        <div class="img-placeholder outdoor-bg">&#127981;</div>
+        <div class="caption">
+          <h3>Duke of Edinburgh</h3>
+          <p>Strong D of E programme with over 200 pupils enrolled at Bronze, Silver, and Gold levels.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>More Activities</h3>
+    <ul class="feature-list">
+      <li>Chess club (national finalists three years running)</li>
+      <li>Creative writing and school magazine</li>
+      <li>Young Enterprise and business skills</li>
+      <li>Philosophy and ethics discussion group</li>
+      <li>Environmental and sustainability society</li>
+      <li>Cooking and baking club</li>
+      <li>Film club and animation workshop</li>
+      <li>Community service and volunteering</li>
+    </ul>
+  </div>
+</div>
+
+<section>
+  <h2>Pastoral Care</h2>
+  <p>The wellbeing of every pupil is our highest priority. Our pastoral care system is designed to ensure that every child feels known, valued, safe, and happy at Alleyn's.</p>
+
+  <h3>The House System</h3>
+  <p>Every pupil belongs to one of our eight houses, each led by a Head of House and supported by a team of house tutors. Houses provide a sense of identity and belonging, and the inter-house competitions &mdash; in sport, drama, music, quiz, and more &mdash; are keenly contested throughout the year.</p>
+
+  <h3>Personal Tutors</h3>
+  <p>Each pupil has a personal tutor who meets with them regularly to monitor their academic progress, discuss any concerns, and provide guidance and support. Tutors are the first point of contact for parents and serve as the pupil's advocate within the school.</p>
+
+  <h3>Wellbeing Programme</h3>
+  <p>Our dedicated wellbeing team includes a school counsellor, an educational psychologist, and trained mental health first-aiders. We run a comprehensive PSHE programme covering topics such as resilience, healthy relationships, online safety, and study skills.</p>
+
+  <h3>Peer Support</h3>
+  <p>Trained Sixth Form mentors provide additional support to younger pupils, offering a friendly ear and practical advice. Our anti-bullying ambassadors help to promote a culture of kindness and respect throughout the school.</p>
+
+  <div class="quote-box">
+    <p>"What sets Alleyn's apart is the genuine warmth of the community. Every teacher knows every child by name, and the pastoral care is truly exceptional. Our son feels completely at home."</p>
+    <span class="author">&mdash; Parent of Year 8 pupil</span>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>Trips &amp; Expeditions</h2>
+  <p>Learning at Alleyn's doesn't stop at the school gates. We run an extensive programme of trips and expeditions throughout the year, both in the UK and overseas.</p>
+
+  <h3>UK Trips</h3>
+  <p>Regular visits to museums, galleries, theatres, and field study centres enhance the curriculum and bring subjects to life. Residential trips include geography fieldwork in Devon, biology fieldwork in Snowdonia, and history visits to the World War I battlefields.</p>
+
+  <h3>International Expeditions</h3>
+  <p>Recent overseas trips have included language exchanges in France, Germany, and Spain; a classics trip to Greece and Italy; a sports tour to South Africa; and adventure expeditions to Nepal and Borneo. Our biennial ski trip to the Alps is always oversubscribed.</p>
+
+  <h3>World Challenge</h3>
+  <p>Sixth Form pupils have the opportunity to participate in World Challenge expeditions to destinations in Asia, Africa, and South America. These life-changing trips combine trekking, community service, and cultural immersion.</p>
+
+  <a href="test-open-days.html" class="cta-link">Visit Us on an Open Day</a>
+</section>
+
+<footer>
+  <p>&copy; 2026 Alleyn's School &middot; Townley Road, Dulwich, London SE22 8SU</p>
+  <p style="margin-top: 8px;"><a href="test-contact.html">Contact Us</a> &middot; <a href="test-admissions.html">Admissions</a> &middot; <a href="test-fees.html">Fees</a></p>
+  <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.5;">This is a test page for EnrollIQ tracking.</p>
+</footer>
+
+<script src="/track.js" data-school-id="ALS-8K4MN2PLX1" data-api-key="phc_ePDq2bcqyv47EmSM5Xh0YvpwYwO2OqWoijNiyqGZ9Qk"></script>
+
+</body>
+</html>

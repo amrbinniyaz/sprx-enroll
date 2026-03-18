@@ -20,7 +20,9 @@ function Toggle({ on, onToggle }) {
 
 export default function Settings({ onToast }) {
   const [alerts, setAlerts] = useState({ immediate: true, daily: true, weekly: false })
-  const [ga4, setGa4] = useState('G-8K4MN2PLX1')
+  const [posthogKey, setPosthogKey] = useState('')
+  const [posthogProjectId, setPosthogProjectId] = useState('')
+  const [posthogStatus, setPosthogStatus] = useState('disconnected') // 'disconnected' | 'checking' | 'connected' | 'error'
   const [hubspot, setHubspot] = useState({ connected: true, portalId: '44281937', lastSync: '12 mins ago' })
   const [emails, setEmails] = useState(
     'amanda@alleyns.org.uk\njames@alleyns.org.uk'
@@ -76,31 +78,68 @@ export default function Settings({ onToast }) {
         </div>
       </div>
 
-      {/* GA4 Connection */}
+      {/* PostHog Connection */}
       <div className="bg-white rounded-2xl border border-slate-100/60 p-6 shadow-sm">
-        <h3 className="text-sm font-bold text-slate-900 mb-0.5">Google Analytics 4 Connection</h3>
+        <div className="flex items-center gap-2 mb-0.5">
+          <h3 className="text-sm font-bold text-slate-900">PostHog Connection</h3>
+          <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 uppercase tracking-wider">
+            Analytics
+          </span>
+        </div>
         <p className="text-xs text-slate-400 mb-4">
-          Enrich prospect profiles with acquisition and traffic data
+          Connect PostHog for visitor tracking, identity stitching, and prospect scoring
         </p>
-        <div className="flex gap-3">
-          <input
-            type="text"
-            value={ga4}
-            onChange={(e) => setGa4(e.target.value)}
-            className="flex-1 text-sm bg-slate-50/80 border border-slate-200/60 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all font-mono"
-            placeholder="G-XXXXXXXXXX"
-          />
+        <div className="space-y-3">
+          <div>
+            <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 block">API Key</label>
+            <input
+              type="text"
+              value={posthogKey}
+              onChange={(e) => setPosthogKey(e.target.value)}
+              className="w-full text-sm bg-slate-50/80 border border-slate-200/60 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all font-mono"
+              placeholder="phc_xxxxxxxxxxxxxxxxxxxx"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 block">Project ID</label>
+            <input
+              type="text"
+              value={posthogProjectId}
+              onChange={(e) => setPosthogProjectId(e.target.value)}
+              className="w-full text-sm bg-slate-50/80 border border-slate-200/60 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all font-mono"
+              placeholder="12345"
+            />
+          </div>
           <button
-            onClick={() => onToast?.('GA4 property connected')}
+            onClick={() => {
+              setPosthogStatus('checking')
+              fetch('/api/health')
+                .then((r) => r.json())
+                .then((d) => {
+                  setPosthogStatus(d.posthog_connected ? 'connected' : 'error')
+                  onToast?.(d.posthog_connected ? 'PostHog connected' : 'PostHog connection failed — check credentials')
+                })
+                .catch(() => {
+                  setPosthogStatus('error')
+                  onToast?.('Backend unreachable — running in demo mode')
+                })
+            }}
             className="bg-slate-900 text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-all shadow-sm cursor-pointer active:scale-[0.97]"
           >
-            Connect
+            {posthogStatus === 'checking' ? 'Checking...' : 'Test Connection'}
           </button>
         </div>
         <div className="flex items-center gap-2 mt-3">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className={`w-2 h-2 rounded-full ${
+            posthogStatus === 'connected' ? 'bg-emerald-400 animate-pulse'
+            : posthogStatus === 'error' ? 'bg-red-400'
+            : 'bg-slate-300'
+          }`} />
           <span className="text-xs text-slate-500">
-            Connected to <strong className="font-mono">{ga4}</strong>
+            {posthogStatus === 'connected' ? 'Connected to PostHog'
+              : posthogStatus === 'error' ? 'Connection failed'
+              : posthogStatus === 'checking' ? 'Checking...'
+              : 'Not connected — using demo data'}
           </span>
         </div>
       </div>
@@ -258,8 +297,9 @@ export default function Settings({ onToast }) {
         <div className="bg-slate-950 rounded-xl p-5 overflow-x-auto">
           <pre className="text-[13px] text-brand-300 leading-relaxed font-mono">
 {`<script
-  src="https://app.enroliq.io/track.js"
+  src="https://app.enrolliq.com/track.js"
   data-school-id="ALS-8K4MN2PLX1"
+  data-api-key="phc_xxx"
   async>
 </script>`}
           </pre>
@@ -267,7 +307,7 @@ export default function Settings({ onToast }) {
         <button
           onClick={() => {
             navigator.clipboard?.writeText(
-              '<script src="https://app.enroliq.io/track.js" data-school-id="ALS-8K4MN2PLX1" async></script>'
+              '<script src="https://app.enrolliq.com/track.js" data-school-id="ALS-8K4MN2PLX1" data-api-key="phc_xxx" async></script>'
             )
             onToast?.('Copied to clipboard')
           }}

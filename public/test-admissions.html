@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admissions - Alleyn's School</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Georgia, serif; color: #1e293b; line-height: 1.7; }
+    header { background: #1e293b; color: white; padding: 32px 40px 12px; text-align: center; }
+    header h1 { font-size: 2.5rem; margin-bottom: 4px; }
+    header .tagline { opacity: 0.7; font-size: 1rem; }
+    nav { background: #1e293b; border-top: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 0; z-index: 100; }
+    nav ul { list-style: none; display: flex; justify-content: center; max-width: 900px; margin: 0 auto; }
+    nav ul li a { display: block; padding: 14px 22px; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.95rem; transition: color 0.2s, background 0.2s; }
+    nav ul li a:hover, nav ul li a.active { color: #fff; background: rgba(255,255,255,0.1); }
+    .page-banner { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; text-align: center; padding: 60px 20px; }
+    .page-banner h2 { font-size: 2.4rem; margin-bottom: 12px; }
+    .page-banner p { font-size: 1.1rem; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+    section { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    section h2 { font-size: 1.8rem; margin-bottom: 16px; color: #1e293b; }
+    section h3 { font-size: 1.3rem; margin-bottom: 10px; color: #334155; margin-top: 28px; }
+    section p { color: #475569; margin-bottom: 16px; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 0; }
+    .entry-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 24px; }
+    .entry-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 28px 20px; text-align: center; }
+    .entry-card h3 { margin-top: 0; color: #1e293b; font-size: 1.2rem; }
+    .entry-card .age { font-size: 0.9rem; color: #64748b; margin-bottom: 8px; }
+    .entry-card p { font-size: 0.9rem; color: #475569; margin-bottom: 0; }
+    .steps { counter-reset: step; margin-top: 24px; }
+    .step { display: flex; gap: 20px; margin-bottom: 32px; align-items: flex-start; }
+    .step-number { counter-increment: step; flex-shrink: 0; width: 48px; height: 48px; background: #1e293b; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; }
+    .step-content h3 { margin-top: 0; margin-bottom: 6px; }
+    .step-content p { margin-bottom: 0; }
+    .dates-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    .dates-table th, .dates-table td { padding: 12px 16px; border: 1px solid #e2e8f0; text-align: left; }
+    .dates-table th { background: #f8fafc; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .highlight-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 24px; margin: 24px 0; }
+    .highlight-box h3 { color: #92400e; margin-top: 0; }
+    .highlight-box p { color: #78350f; margin-bottom: 0; }
+    .alt-section { background: #f8fafc; }
+    .alt-section .inner { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    .cta-link { display: inline-block; background: #1e293b; color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 1rem; margin-top: 12px; transition: background 0.2s; }
+    .cta-link:hover { background: #334155; }
+    footer { background: #1e293b; color: rgba(255,255,255,0.6); text-align: center; padding: 30px; font-size: 0.85rem; }
+    footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Alleyn's School</h1>
+  <p class="tagline">Founded 1619 &middot; Dulwich, London</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="test-school-site.html">Home</a></li>
+    <li><a href="test-admissions.html" class="active">Admissions</a></li>
+    <li><a href="test-fees.html">Fees</a></li>
+    <li><a href="test-school-life.html">School Life</a></li>
+    <li><a href="test-open-days.html">Open Days</a></li>
+    <li><a href="test-contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-banner">
+  <h2>Admissions</h2>
+  <p>Join our vibrant community. We welcome applications for entry at multiple points throughout a pupil's school career.</p>
+</div>
+
+<section>
+  <h2>Entry Points</h2>
+  <p>We offer several entry points to Alleyn's, each with its own assessment process tailored to the age group. Click below to learn more about each entry point.</p>
+  <div class="entry-cards">
+    <div class="entry-card">
+      <h3>Year 7 Entry</h3>
+      <p class="age">Age 11+</p>
+      <p>Our largest intake. Assessment includes English, maths, and verbal reasoning.</p>
+    </div>
+    <div class="entry-card">
+      <h3>Year 8 Entry</h3>
+      <p class="age">Age 12+</p>
+      <p>Limited places available. Assessment in English, maths, and science.</p>
+    </div>
+    <div class="entry-card">
+      <h3>Year 9 Entry</h3>
+      <p class="age">Age 13+</p>
+      <p>A significant intake point. Common Entrance or school's own exam.</p>
+    </div>
+    <div class="entry-card">
+      <h3>Sixth Form</h3>
+      <p class="age">Age 16+</p>
+      <p>Join for A Levels. Interview and predicted grades required.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>The Admissions Process</h2>
+  <p>Our admissions process is designed to be straightforward and supportive. We are looking for pupils who will thrive in our stimulating and inclusive environment.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <h3>Register Your Interest</h3>
+        <p>Complete our online registration form and pay the non-refundable registration fee of &pound;150. We recommend registering at least 18 months before the intended entry date.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <h3>Attend an Open Day</h3>
+        <p>Visit the school to see our campus, meet staff and current pupils, and get a feel for the Alleyn's community. Open Days run throughout the autumn term.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <h3>Assessment Day</h3>
+        <p>Candidates attend an assessment day which includes age-appropriate tests and group activities. We are looking for potential and curiosity, not just current achievement.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <h3>Interview</h3>
+        <p>Shortlisted candidates are invited for an interview with a senior member of staff. This is a relaxed conversation designed to get to know the child as an individual.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <h3>Offer</h3>
+        <p>Offers are sent out in February for September entry. Successful families have two weeks to accept their place and pay the deposit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<div class="alt-section">
+  <div class="inner">
+    <h2>Key Dates 2026/27</h2>
+    <table class="dates-table">
+      <thead>
+        <tr><th>Event</th><th>Date</th><th>Entry Point</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Registration Deadline</td><td>15 October 2026</td><td>Year 7</td></tr>
+        <tr><td>Open Day</td><td>5 November 2026</td><td>All Years</td></tr>
+        <tr><td>Assessment Day</td><td>10 January 2027</td><td>Year 7</td></tr>
+        <tr><td>Assessment Day</td><td>17 January 2027</td><td>Year 9</td></tr>
+        <tr><td>Sixth Form Interviews</td><td>24-28 January 2027</td><td>Sixth Form</td></tr>
+        <tr><td>Offers Released</td><td>12 February 2027</td><td>All Years</td></tr>
+        <tr><td>Acceptance Deadline</td><td>1 March 2027</td><td>All Years</td></tr>
+        <tr><td>New Pupils' Day</td><td>25 June 2027</td><td>All Years</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<section>
+  <h2>Open Day Information</h2>
+  <p>Our Open Days are the best way to experience Alleyn's first-hand. You will have the opportunity to tour the campus, sit in on lessons, meet our Headmaster and teaching staff, and talk to current pupils about their experience.</p>
+  <p>Open Days typically run from 9:30am to 12:30pm and include a welcome talk, guided tours led by Sixth Form students, subject demonstrations, and refreshments. We strongly recommend attending before applying.</p>
+
+  <div class="highlight-box">
+    <h3>Next Open Day: Saturday 5 November 2026</h3>
+    <p>Bookings are now open. Places fill quickly, so we encourage early registration. Please visit our Open Days page for full details and to book your place.</p>
+  </div>
+
+  <a href="test-open-days.html" class="cta-link">View Open Days</a>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>Scholarships</h2>
+  <p>We offer academic, music, sport, art, and drama scholarships at 11+, 13+, and 16+ entry. Scholarships are awarded in recognition of exceptional talent and potential, and carry a fee remission of up to 10%.</p>
+  <p>Scholarship candidates are identified during the standard admissions process and invited to attend additional assessments. Music scholars, for example, are asked to perform two contrasting pieces and undertake aural and sight-reading tests.</p>
+  <p>Scholarships may be held in combination with a means-tested bursary, enabling the most talented pupils to attend Alleyn's regardless of family circumstances.</p>
+
+  <h3>Academic Scholarships</h3>
+  <p>Awarded to candidates who demonstrate exceptional intellectual ability and curiosity. Assessment is based on performance in entrance examinations and interview.</p>
+
+  <h3>Music Scholarships</h3>
+  <p>Candidates should be playing at least one instrument to a minimum of Grade 5 standard (Grade 7 for Sixth Form). Free instrumental tuition is provided.</p>
+
+  <h3>Sport Scholarships</h3>
+  <p>For pupils who show outstanding ability and commitment to sport. Candidates will attend a practical assessment and interview with the Director of Sport.</p>
+
+  <h3>Art &amp; Drama Scholarships</h3>
+  <p>Art scholars submit a portfolio and attend a practical workshop. Drama scholars perform two contrasting monologues and participate in a group workshop.</p>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>What are you looking for in a candidate?</h3>
+  <p>We look for pupils who are curious, enthusiastic, and eager to learn. We value potential as much as current achievement, and we seek children who will contribute positively to our school community.</p>
+
+  <h3>Can my child sit the assessment if they have special educational needs?</h3>
+  <p>Absolutely. We make reasonable adjustments for candidates with documented learning differences. Please inform us at the time of registration so we can make appropriate arrangements.</p>
+
+  <h3>What happens if my child is not offered a place?</h3>
+  <p>If your child is not offered a place, they may be placed on our waiting list. We are also happy to provide feedback on their assessment performance. Some families choose to reapply at a later entry point.</p>
+
+  <h3>How competitive is entry?</h3>
+  <p>We typically receive around 800 applications for 120 Year 7 places, making it selective but not prohibitively so. We aim to admit children from a wide range of backgrounds and with diverse talents and interests.</p>
+
+  <a href="test-contact.html" class="cta-link">Make an Enquiry</a>
+</section>
+
+<footer>
+  <p>&copy; 2026 Alleyn's School &middot; Townley Road, Dulwich, London SE22 8SU</p>
+  <p style="margin-top: 8px;"><a href="test-contact.html">Contact Us</a> &middot; <a href="test-fees.html">Fees</a> &middot; <a href="test-open-days.html">Open Days</a></p>
+  <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.5;">This is a test page for EnrollIQ tracking.</p>
+</footer>
+
+<script src="/track.js" data-school-id="ALS-8K4MN2PLX1" data-api-key="phc_ePDq2bcqyv47EmSM5Xh0YvpwYwO2OqWoijNiyqGZ9Qk"></script>
+
+</body>
+</html>

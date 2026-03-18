@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact &amp; Enquiry - Alleyn's School</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Georgia, serif; color: #1e293b; line-height: 1.7; }
+    header { background: #1e293b; color: white; padding: 32px 40px 12px; text-align: center; }
+    header h1 { font-size: 2.5rem; margin-bottom: 4px; }
+    header .tagline { opacity: 0.7; font-size: 1rem; }
+    nav { background: #1e293b; border-top: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 0; z-index: 100; }
+    nav ul { list-style: none; display: flex; justify-content: center; max-width: 900px; margin: 0 auto; }
+    nav ul li a { display: block; padding: 14px 22px; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.95rem; transition: color 0.2s, background 0.2s; }
+    nav ul li a:hover, nav ul li a.active { color: #fff; background: rgba(255,255,255,0.1); }
+    .page-banner { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; text-align: center; padding: 60px 20px; }
+    .page-banner h2 { font-size: 2.4rem; margin-bottom: 12px; }
+    .page-banner p { font-size: 1.1rem; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+    section { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    section h2 { font-size: 1.8rem; margin-bottom: 16px; color: #1e293b; }
+    section h3 { font-size: 1.3rem; margin-bottom: 10px; color: #334155; margin-top: 28px; }
+    section p { color: #475569; margin-bottom: 16px; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 0; }
+    .alt-section { background: #f8fafc; }
+    .alt-section .inner { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    form { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 32px; margin-top: 20px; }
+    label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 4px; color: #334155; }
+    input, select, textarea { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; margin-bottom: 16px; font-family: Georgia, serif; }
+    textarea { resize: vertical; min-height: 120px; }
+    button[type="submit"] { background: #1e293b; color: white; border: none; padding: 14px 36px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+    button[type="submit"]:hover { background: #334155; }
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-top: 24px; }
+    .contact-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; text-align: center; }
+    .contact-card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .contact-card h3 { margin-top: 0; font-size: 1.1rem; margin-bottom: 8px; }
+    .contact-card p { font-size: 0.9rem; color: #64748b; margin-bottom: 0; }
+    .contact-card a { color: #1e40af; text-decoration: none; }
+    .map-placeholder { background: #e2e8f0; border-radius: 12px; height: 300px; display: flex; align-items: center; justify-content: center; margin-top: 24px; color: #64748b; font-size: 1.1rem; flex-direction: column; gap: 8px; }
+    .map-placeholder .map-icon { font-size: 3rem; }
+    .office-hours { margin-top: 16px; }
+    .office-hours table { width: 100%; border-collapse: collapse; }
+    .office-hours td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; color: #475569; }
+    .office-hours td:first-child { font-weight: bold; color: #1e293b; width: 40%; }
+    footer { background: #1e293b; color: rgba(255,255,255,0.6); text-align: center; padding: 30px; font-size: 0.85rem; }
+    footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Alleyn's School</h1>
+  <p class="tagline">Founded 1619 &middot; Dulwich, London</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="test-school-site.html">Home</a></li>
+    <li><a href="test-admissions.html">Admissions</a></li>
+    <li><a href="test-fees.html">Fees</a></li>
+    <li><a href="test-school-life.html">School Life</a></li>
+    <li><a href="test-open-days.html">Open Days</a></li>
+    <li><a href="test-contact.html" class="active">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-banner">
+  <h2>Contact &amp; Enquiry</h2>
+  <p>Interested in Alleyn's for your child? We would love to hear from you. Complete the enquiry form below or get in touch directly.</p>
+</div>
+
+<section>
+  <h2>Make an Enquiry</h2>
+  <p>Fill in the form below and a member of our admissions team will be in touch within 24 hours. All enquiries are handled with care and discretion.</p>
+
+  <form id="enquiry-form">
+    <label for="name">Your Name</label>
+    <input type="text" id="name" name="name" placeholder="e.g. James Thompson" required>
+
+    <label for="email">Email Address</label>
+    <input type="email" id="email" name="email" placeholder="e.g. james@example.com" required>
+
+    <label for="child_name">Child's Name</label>
+    <input type="text" id="child_name" name="child_name" placeholder="e.g. Emily Thompson">
+
+    <label for="year_group">Year of Entry</label>
+    <select id="year_group" name="year_group">
+      <option value="">Select year group...</option>
+      <option value="year7">Year 7 (Sept 2027)</option>
+      <option value="year8">Year 8 (Sept 2027)</option>
+      <option value="year9">Year 9 (Sept 2027)</option>
+      <option value="year10">Year 10 (Sept 2027)</option>
+      <option value="sixth_form">Sixth Form (Sept 2027)</option>
+    </select>
+
+    <label for="message">Your Message</label>
+    <textarea id="message" name="message" placeholder="Tell us a little about your child and what you're looking for in a school..."></textarea>
+
+    <button type="submit">Submit Enquiry</button>
+  </form>
+</section>
+
+<hr class="divider">
+
+<div class="alt-section">
+  <div class="inner">
+    <h2>Get in Touch</h2>
+    <p>You can also contact us directly using the details below. Our admissions team is available during school office hours.</p>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="icon">&#128222;</div>
+        <h3>Telephone</h3>
+        <p><a href="tel:+442085571500">020 8557 1500</a></p>
+        <p style="margin-top: 4px; font-size: 0.8rem;">Main switchboard</p>
+      </div>
+      <div class="contact-card">
+        <div class="icon">&#9993;</div>
+        <h3>Email</h3>
+        <p><a href="mailto:admissions@alleyns.org.uk">admissions@alleyns.org.uk</a></p>
+        <p style="margin-top: 4px; font-size: 0.8rem;">Admissions enquiries</p>
+      </div>
+      <div class="contact-card">
+        <div class="icon">&#128205;</div>
+        <h3>Address</h3>
+        <p>Townley Road<br>Dulwich, London<br>SE22 8SU</p>
+      </div>
+    </div>
+
+    <h3>Office Hours</h3>
+    <div class="office-hours">
+      <table>
+        <tr><td>Monday &ndash; Friday</td><td>8:00 am &ndash; 5:00 pm</td></tr>
+        <tr><td>Saturday</td><td>9:00 am &ndash; 12:00 pm (term time only)</td></tr>
+        <tr><td>Sunday</td><td>Closed</td></tr>
+        <tr><td>School Holidays</td><td>9:00 am &ndash; 4:00 pm (Mon&ndash;Fri)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2>Find Us</h2>
+  <p>Alleyn's School is located in the heart of Dulwich, South London, with excellent transport links.</p>
+
+  <div class="map-placeholder">
+    <div class="map-icon">&#128506;</div>
+    <div>Alleyn's School &mdash; Townley Road, Dulwich, London SE22 8SU</div>
+    <div style="font-size: 0.85rem;">Interactive map placeholder</div>
+  </div>
+
+  <h3>By Train</h3>
+  <p>North Dulwich station is a 10-minute walk from the school. Trains run frequently from London Bridge (15 minutes) and London Victoria (20 minutes) via the Southern Rail network.</p>
+
+  <h3>By Bus</h3>
+  <p>Several bus routes serve the Dulwich area, including the P4, 37, 40, 176, and 185. The nearest bus stop is on Townley Road, directly outside the school gates.</p>
+
+  <h3>By Car</h3>
+  <p>The school is easily accessible from the South Circular (A205) and A2. Limited visitor parking is available on site by prior arrangement. Pay-and-display parking is available on surrounding streets. We encourage the use of public transport where possible.</p>
+
+  <h3>By Bicycle</h3>
+  <p>Secure bicycle parking is available for visitors near the main entrance. Dulwich is well connected to London's cycling network.</p>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>Key Contacts</h2>
+  <p>If you have a specific query, the following contacts may be helpful.</p>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <h3>Admissions Registrar</h3>
+      <p>Mrs Sarah Mitchell</p>
+      <p><a href="mailto:admissions@alleyns.org.uk">admissions@alleyns.org.uk</a></p>
+    </div>
+    <div class="contact-card">
+      <h3>Bursar</h3>
+      <p>Mr David Chen</p>
+      <p><a href="mailto:bursar@alleyns.org.uk">bursar@alleyns.org.uk</a></p>
+    </div>
+    <div class="contact-card">
+      <h3>Head of Sixth Form</h3>
+      <p>Dr Rebecca Woods</p>
+      <p><a href="mailto:sixthform@alleyns.org.uk">sixthform@alleyns.org.uk</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Alleyn's School &middot; Townley Road, Dulwich, London SE22 8SU</p>
+  <p style="margin-top: 8px;"><a href="test-school-site.html">Home</a> &middot; <a href="test-admissions.html">Admissions</a> &middot; <a href="test-fees.html">Fees</a></p>
+  <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.5;">This is a test page for EnrollIQ tracking.</p>
+</footer>
+
+<script src="/track.js" data-school-id="ALS-8K4MN2PLX1" data-api-key="phc_ePDq2bcqyv47EmSM5Xh0YvpwYwO2OqWoijNiyqGZ9Qk"></script>
+
+<script>
+  var form = document.getElementById('enquiry-form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var f = this;
+      setTimeout(function() {
+        console.log('[Test] Enquiry submitted!');
+        f.reset();
+      }, 500);
+    });
+  }
+</script>
+
+</body>
+</html>

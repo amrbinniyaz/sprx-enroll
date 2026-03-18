@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, ChevronRight } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { PROSPECTS } from '../data/prospects'
+import { useProspects } from '../hooks/useProspects'
 import { getBand, cn } from '../lib/utils'
 import Avatar from '../components/Avatar'
 import BandPill from '../components/BandPill'
@@ -20,6 +20,7 @@ const BAND_FILTERS = [
 
 export default function ProspectList() {
   const navigate = useNavigate()
+  const { prospects: PROSPECTS } = useProspects()
   const [query, setQuery] = useState('')
   const [bandFilter, setBandFilter] = useState('all')
   const [sortBy, setSortBy] = useState('score')
@@ -29,17 +30,17 @@ export default function ProspectList() {
       const q = query.toLowerCase()
       const matchQ =
         !q ||
-        p.name.toLowerCase().includes(q) ||
-        p.email.toLowerCase().includes(q) ||
-        p.childName.toLowerCase().includes(q)
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.email || '').toLowerCase().includes(q) ||
+        (p.childName || '').toLowerCase().includes(q)
       const matchBand = bandFilter === 'all' || p.band === bandFilter
       return matchQ && matchBand
     }).sort((a, b) => {
       if (sortBy === 'score') return b.score - a.score
-      if (sortBy === 'name') return a.name.localeCompare(b.name)
+      if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '')
       return 0
     })
-  }, [query, bandFilter, sortBy])
+  }, [PROSPECTS, query, bandFilter, sortBy])
 
   const loading = usePageLoad(700)
   if (loading) return <ProspectListSkeleton />
@@ -152,17 +153,17 @@ export default function ProspectList() {
                       <BandPill band={p.band} />
                     </div>
                   </td>
-                  <td className="px-5 py-3.5 text-sm text-slate-700">{p.childName}</td>
-                  <td className="px-5 py-3.5 text-sm text-slate-500">{p.yearOfEntry}</td>
+                  <td className="px-5 py-3.5 text-sm text-slate-700">{p.childName || p.child_name || '—'}</td>
+                  <td className="px-5 py-3.5 text-sm text-slate-500">{p.yearOfEntry || p.year_group || '—'}</td>
                   <td className="px-5 py-3.5">
                     <PatternPill pattern={p.pattern} />
                   </td>
                   <td className="px-5 py-3.5">
                     <span className="text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded-md border border-slate-100/60">
-                      {p.source}
+                      {p.source || '—'}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-sm text-slate-400">{p.lastSeen}</td>
+                  <td className="px-5 py-3.5 text-sm text-slate-400">{p.lastSeen || p.last_seen?.slice(0, 10) || '—'}</td>
                   <td className="px-4 py-3.5">
                     <ChevronRight size={14} className="text-slate-300" />
                   </td>

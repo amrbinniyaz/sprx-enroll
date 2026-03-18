@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alleyn's School - Welcome</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Georgia, serif; color: #1e293b; line-height: 1.7; }
+    header { background: #1e293b; color: white; padding: 32px 40px 12px; text-align: center; }
+    header h1 { font-size: 2.5rem; margin-bottom: 4px; }
+    header .tagline { opacity: 0.7; font-size: 1rem; }
+    nav { background: #1e293b; border-top: 1px solid rgba(255,255,255,0.1); padding: 0; position: sticky; top: 0; z-index: 100; }
+    nav ul { list-style: none; display: flex; justify-content: center; max-width: 900px; margin: 0 auto; }
+    nav ul li a { display: block; padding: 14px 22px; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.95rem; transition: color 0.2s, background 0.2s; }
+    nav ul li a:hover, nav ul li a.active { color: #fff; background: rgba(255,255,255,0.1); }
+    .hero { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; text-align: center; padding: 80px 20px; }
+    .hero h2 { font-size: 2.8rem; margin-bottom: 16px; font-weight: normal; }
+    .hero p { font-size: 1.2rem; opacity: 0.85; max-width: 600px; margin: 0 auto 32px; }
+    .hero .cta-btn { display: inline-block; background: #fff; color: #1e293b; padding: 14px 36px; border-radius: 8px; text-decoration: none; font-size: 1.05rem; font-weight: bold; transition: transform 0.2s; }
+    .hero .cta-btn:hover { transform: translateY(-2px); }
+    section { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    section h2 { font-size: 1.8rem; margin-bottom: 16px; color: #1e293b; }
+    section h3 { font-size: 1.3rem; margin-bottom: 10px; color: #334155; }
+    section p { color: #475569; margin-bottom: 16px; }
+    .quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 24px; }
+    .quick-link-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 28px 24px; text-align: center; text-decoration: none; color: #1e293b; transition: transform 0.2s, box-shadow 0.2s; }
+    .quick-link-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .quick-link-card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .quick-link-card h3 { margin-bottom: 8px; font-size: 1.1rem; }
+    .quick-link-card p { font-size: 0.9rem; color: #64748b; margin-bottom: 0; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 0; }
+    .why-section { background: #f8fafc; }
+    .why-section .inner { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 32px; margin-top: 24px; }
+    .why-item h3 { font-size: 1.1rem; margin-bottom: 8px; color: #1e293b; }
+    .why-item p { font-size: 0.95rem; color: #64748b; }
+    .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 24px; text-align: center; }
+    .stat-item .number { font-size: 2.2rem; font-weight: bold; color: #1e293b; }
+    .stat-item .label { font-size: 0.85rem; color: #64748b; margin-top: 4px; }
+    footer { background: #1e293b; color: rgba(255,255,255,0.6); text-align: center; padding: 30px; font-size: 0.85rem; }
+    footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Alleyn's School</h1>
+  <p class="tagline">Founded 1619 &middot; Dulwich, London</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="test-school-site.html" class="active">Home</a></li>
+    <li><a href="test-admissions.html">Admissions</a></li>
+    <li><a href="test-fees.html">Fees</a></li>
+    <li><a href="test-school-life.html">School Life</a></li>
+    <li><a href="test-open-days.html">Open Days</a></li>
+    <li><a href="test-contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <h2>Where curiosity meets excellence</h2>
+  <p>A co-educational independent school in Dulwich offering an outstanding education for pupils aged 4 to 18.</p>
+  <a href="test-admissions.html" class="cta-btn">Explore Admissions</a>
+</div>
+
+<section>
+  <h2>Welcome to Alleyn's</h2>
+  <p>Alleyn's is one of the UK's leading co-educational independent schools, set on a stunning 30-acre campus in the heart of Dulwich, South London. For over 400 years, we have been inspiring young people to discover their passions, develop their talents, and make a positive difference in the world.</p>
+  <p>Our approach to education is holistic. We combine academic rigour with an exceptional co-curricular programme that spans sport, drama, music, art, and community service. Every pupil is known, valued, and supported to achieve their personal best.</p>
+  <p>We pride ourselves on our warm, inclusive community where pupils from all backgrounds come together to learn, grow, and thrive. Our diverse intake and generous bursary programme ensure that an Alleyn's education is open to all who would benefit from it.</p>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>Quick Links</h2>
+  <div class="quick-links">
+    <a href="test-admissions.html" class="quick-link-card">
+      <div class="icon">&#127891;</div>
+      <h3>Admissions</h3>
+      <p>Entry points, process, and how to apply</p>
+    </a>
+    <a href="test-fees.html" class="quick-link-card">
+      <div class="icon">&#128176;</div>
+      <h3>Fees &amp; Bursaries</h3>
+      <p>Fee schedule and financial assistance</p>
+    </a>
+    <a href="test-open-days.html" class="quick-link-card">
+      <div class="icon">&#128197;</div>
+      <h3>Open Days</h3>
+      <p>Visit us and see the school in action</p>
+    </a>
+    <a href="test-contact.html" class="quick-link-card">
+      <div class="icon">&#9993;</div>
+      <h3>Make an Enquiry</h3>
+      <p>Get in touch with our admissions team</p>
+    </a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>At a Glance</h2>
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="number">1,100+</div>
+      <div class="label">Pupils</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">30</div>
+      <div class="label">Acre Campus</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">98%</div>
+      <div class="label">A*-B at A Level</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">100+</div>
+      <div class="label">Clubs &amp; Societies</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<div class="why-section">
+  <div class="inner">
+    <h2>Why Choose Alleyn's?</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <h3>Academic Excellence</h3>
+        <p>Consistently outstanding results at GCSE and A Level, with leavers securing places at the best universities in the UK and worldwide, including Oxford, Cambridge, and Ivy League institutions.</p>
+      </div>
+      <div class="why-item">
+        <h3>Outstanding Facilities</h3>
+        <p>Our 30-acre campus includes a state-of-the-art science centre, performing arts complex, Olympic-standard swimming pool, and all-weather sports pitches.</p>
+      </div>
+      <div class="why-item">
+        <h3>Pastoral Care</h3>
+        <p>Every pupil is assigned a personal tutor who oversees their academic progress and wellbeing. Our dedicated pastoral team ensures every child feels safe, supported, and happy.</p>
+      </div>
+      <div class="why-item">
+        <h3>Co-Curricular Programme</h3>
+        <p>Over 100 clubs and societies, from robotics to debating, fencing to filmmaking. We believe education extends far beyond the classroom.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2>Our History</h2>
+  <p>Alleyn's School was founded in 1619 by Edward Alleyn, the Elizabethan actor and entrepreneur. Originally part of the College of God's Gift, the school has grown from a small local foundation to one of the most respected independent schools in the country.</p>
+  <p>Throughout our history, we have remained true to our founder's vision of providing an education that combines intellectual rigour with compassion and service. Our alumni include Nobel laureates, Olympic athletes, award-winning artists, and leaders in every field of human endeavour.</p>
+  <p>Today, we continue to build on this proud heritage while embracing innovation and looking to the future. Our recent developments include a new Sixth Form centre, a cutting-edge STEM facility, and an expanded bursary programme that supports over 15% of our pupils.</p>
+</section>
+
+<hr class="divider">
+
+<section>
+  <h2>What Our Parents Say</h2>
+  <blockquote style="border-left: 4px solid #1e293b; padding-left: 20px; margin: 24px 0; font-style: italic; color: #475569;">
+    "Choosing Alleyn's was the best decision we made for our daughter. She has flourished academically and socially, and the pastoral care has been exceptional. The school truly sees and nurtures the whole child."
+    <br><br><strong style="font-style: normal; color: #1e293b;">&mdash; Parent of Year 9 pupil</strong>
+  </blockquote>
+  <blockquote style="border-left: 4px solid #1e293b; padding-left: 20px; margin: 24px 0; font-style: italic; color: #475569;">
+    "The breadth of opportunities at Alleyn's is remarkable. Our son has discovered passions he never knew he had, from competitive rowing to philosophy club. The teachers go above and beyond."
+    <br><br><strong style="font-style: normal; color: #1e293b;">&mdash; Parent of Year 11 pupil</strong>
+  </blockquote>
+</section>
+
+<footer>
+  <p>&copy; 2026 Alleyn's School &middot; Townley Road, Dulwich, London SE22 8SU</p>
+  <p style="margin-top: 8px;"><a href="test-contact.html">Contact Us</a> &middot; <a href="test-admissions.html">Admissions</a> &middot; <a href="test-fees.html">Fees</a></p>
+  <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.5;">This is a test page for EnrollIQ tracking.</p>
+</footer>
+
+<script src="/track.js" data-school-id="ALS-8K4MN2PLX1" data-api-key="phc_ePDq2bcqyv47EmSM5Xh0YvpwYwO2OqWoijNiyqGZ9Qk"></script>
+
+</body>
+</html>

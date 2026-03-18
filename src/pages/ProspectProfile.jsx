@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Phone, Calendar, Mail, Sparkles, Eye, FileText, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react'
 import InfoPopover from '../components/InfoPopover'
 import { motion } from 'framer-motion'
+import { useProspect } from '../hooks/useProspect'
 import { PROSPECTS } from '../data/prospects'
 import { getBand, getPattern } from '../lib/utils'
 import ScoreRing from '../components/ScoreRing'
@@ -22,6 +23,110 @@ const EVENT_STYLES = {
 }
 
 const isConversion = (type) => type === 'form_submit' || type === 'email_click'
+
+// Transform PostHog raw events into the format the timeline expects
+function normalizeEvents(events) {
+  if (!events || events.length === 0) return []
+  // If events already have 'type' field, they're mock data — return as-is
+  if (events[0].type) return events
+
+  // Group scroll_depth and time_on_page data by timestamp proximity to enrich pageviews
+  const scrollByPage = {}
+  const timeByPage = {}
+  events.forEach((e) => {
+    const props = e.properties || {}
+    const pagePath = props.page_path || props.$pathname || ''
+    if (e.event === 'scroll_depth_reached') {
+      const key = pagePath + '|' + e.timestamp.slice(0, 16) // group by minute
+      scrollByPage[key] = Math.max(scrollByPage[key] || 0, props.depth || 0)
+    }
+    if (e.event === 'time_on_page') {
+      timeByPage[pagePath] = Math.max(timeByPage[pagePath] || 0, props.duration_seconds || 0)
+    }
+  })
+
+  function formatTimeLabel(ts) {
+    const now = new Date()
+    const diffMs = now - new Date(ts)
+    const diffMins = Math.round(diffMs / 60000)
+    const diffHours = Math.round(diffMs / 3600000)
+    const diffDays = Math.round(diffMs / 86400000)
+    if (diffMins < 1) return 'just now'
+    if (diffMins < 60) return `${diffMins} mins ago`
+    if (diffHours < 24) return `${diffHours} hours ago`
+    if (diffDays === 1) return '1 day ago'
+    return `${diffDays} days ago`
+  }
+
+  function pageTitle(path) {
+    const name = (path || '').split('/').filter(Boolean).pop() || ''
+    if (!name || name === '/') return 'Homepage'
+    return name
+      .replace(/test-|\.html/g, '')
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase()) || 'Homepage'
+  }
+
+  // PostHog events have 'event' and 'timestamp' fields
+  return events
+    .filter((e) => {
+      // Keep pageviews, form submissions, identify. Skip scroll/time/pageleave/$set
+      const dominated = ['scroll_depth_reached', 'time_on_page', '$pageleave', '$set']
+      return !dominated.includes(e.event)
+    })
+    .map((e) => {
+      const props = e.properties || {}
+      const timeLabel = formatTimeLabel(e.timestamp)
+      const pagePath = props.$pathname || props.page_path || ''
+
+      if (e.event === '$pageview') {
+        // Find max scroll depth for this pageview
+        const scrollKey = pagePath + '|' + e.timestamp.slice(0, 16)
+        const scroll = scrollByPage[scrollKey] || null
+        // Find time spent
+        const duration = timeByPage[pagePath] || null
+        const durationStr = duration
+          ? `${Math.floor(duration / 60)}:${String(duration % 60).padStart(2, '0')}`
+          : undefined
+
+        return {
+          type: 'page_view',
+          title: pageTitle(pagePath),
+          time: timeLabel,
+          duration: durationStr,
+          scroll,
+          scoreChange: scroll && scroll >= 80 ? '+5' : undefined,
+        }
+      }
+
+      if (e.event === 'enquiry_form_submitted') {
+        return {
+          type: 'form_submit',
+          title: 'Enquiry Form Submitted',
+          time: timeLabel,
+          scoreChange: '+25',
+          aiInsight: 'Identity captured — anonymous sessions now linked',
+        }
+      }
+
+      if (e.event === '$identify') {
+        return {
+          type: 'form_submit',
+          title: 'Identity Linked',
+          time: timeLabel,
+          aiInsight: 'All anonymous browsing history retroactively linked to this person',
+        }
+      }
+
+      // Generic fallback for any other event
+      return {
+        type: 'page_view',
+        title: e.event.replace(/_/g, ' ').replace(/\$/g, '').replace(/\b\w/g, (c) => c.toUpperCase()),
+        time: timeLabel,
+      }
+    })
+    .filter(Boolean)
+}
 
 function parseTimeToMs(timeStr) {
   if (timeStr.includes('mins')) return parseInt(timeStr) * 60000
@@ -220,18 +325,21 @@ function SessionGroup({ session, allEventsFlat }) {
 export default function ProspectProfile({ onToast }) {
   const { id } = useParams()
   const navigate = useNavigate()
-  const prospect = PROSPECTS.find((p) => p.id === Number(id))
+  const { prospect: liveProspect } = useProspect(id)
+  const prospect = liveProspect || PROSPECTS.find((p) => p.id === Number(id))
 
   const loading = usePageLoad(600)
   const [notes, setNotes] = useState(prospect?.notes || '')
   const [status, setStatus] = useState(prospect?.status || 'active')
 
+  const rawEvents = prospect?.events || []
+  const events = useMemo(() => normalizeEvents(rawEvents), [prospect])
   const timelineSessions = useMemo(
-    () => (prospect ? groupEventsIntoSessions([...prospect.events].reverse()) : []),
-    [prospect]
+    () => (events.length > 0 ? groupEventsIntoSessions([...events].reverse()) : []),
+    [events]
   )
 
-  const hasEnquiry = prospect?.events.some((e) => e.type === 'form_submit')
+  const hasEnquiry = events.some((e) => e.type === 'form_submit')
 
   if (loading) return <ProfileSkeleton />
 
@@ -277,10 +385,12 @@ export default function ProspectProfile({ onToast }) {
                 <ScoreRing score={prospect.score} band={prospect.band} size={90} />
                 <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Engagement</div>
               </div>
-              <div className="text-center">
-                <ProbabilityRing probability={prospect.enrolmentProbability} confidence={prospect.probabilityConfidence} size={90} />
-                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Enrolment</div>
-              </div>
+              {prospect.enrolmentProbability != null && (
+                <div className="text-center">
+                  <ProbabilityRing probability={prospect.enrolmentProbability} confidence={prospect.probabilityConfidence} size={90} />
+                  <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Enrolment</div>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex-1 min-w-0">
@@ -299,7 +409,7 @@ export default function ProspectProfile({ onToast }) {
                     </span>
                   )}
                   <span className="text-xs text-slate-400 ml-1 font-medium">
-                    {prospect.visits} website visits
+                    {prospect.visits || prospect.page_views || 0} website visits
                   </span>
                 </div>
               </div>
@@ -318,31 +428,37 @@ export default function ProspectProfile({ onToast }) {
             </div>
 
             <div className="grid grid-cols-2 gap-x-10 gap-y-2.5 mt-5">
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <Mail size={14} className="text-slate-400" />
-                <a
-                  href={`mailto:${prospect.email}`}
-                  className="text-brand-600 hover:underline font-medium"
-                >
-                  {prospect.email}
-                </a>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Phone size={14} className="text-slate-400" />
-                <a
-                  href={`tel:${prospect.phone}`}
-                  className="font-bold text-slate-800 hover:text-brand-600"
-                >
-                  {prospect.phone}
-                </a>
-              </div>
+              {prospect.email && (
+                <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <Mail size={14} className="text-slate-400" />
+                  <a
+                    href={`mailto:${prospect.email}`}
+                    className="text-brand-600 hover:underline font-medium"
+                  >
+                    {prospect.email}
+                  </a>
+                </div>
+              )}
+              {prospect.phone && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Phone size={14} className="text-slate-400" />
+                  <a
+                    href={`tel:${prospect.phone}`}
+                    className="font-bold text-slate-800 hover:text-brand-600"
+                  >
+                    {prospect.phone}
+                  </a>
+                </div>
+              )}
+              {(prospect.childName || prospect.yearGroup || prospect.yearOfEntry) && (
+                <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <span className="w-[14px]" />
+                  {[prospect.childName, prospect.yearGroup, prospect.yearOfEntry].filter(Boolean).join(' · ')}
+                </div>
+              )}
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <span className="w-[14px]" />
-                {prospect.childName} &middot; {prospect.yearGroup} &middot; {prospect.yearOfEntry}
-              </div>
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <span className="w-[14px]" />
-                {prospect.source} &middot; Last seen {prospect.lastSeen}
+                {prospect.source || 'Direct'} &middot; Last seen {prospect.lastSeen || prospect.last_seen?.slice(0, 10) || '—'}
               </div>
             </div>
           </div>
@@ -369,20 +485,56 @@ export default function ProspectProfile({ onToast }) {
         {/* Left Column */}
         <div className="col-span-1 space-y-5">
           {/* AI Summary */}
-          <div className="ai-glow rounded-2xl p-5 border border-brand-100/40">
-            <div className="relative flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-500 to-pink-500 flex items-center justify-center shadow-sm">
-                <Sparkles size={12} className="text-white" />
+          {prospect.aiSummary ? (
+            <div className="ai-glow rounded-2xl p-5 border border-brand-100/40">
+              <div className="relative flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-500 to-pink-500 flex items-center justify-center shadow-sm">
+                  <Sparkles size={12} className="text-white" />
+                </div>
+                <span className="text-sm font-bold text-brand-800">EnrolIQ Intelligence</span>
+                <span className="text-[10px] bg-brand-100 text-brand-700 font-bold px-1.5 py-0.5 rounded-md ml-auto">
+                  AI
+                </span>
               </div>
-              <span className="text-sm font-bold text-brand-800">EnrolIQ Intelligence</span>
-              <span className="text-[10px] bg-brand-100 text-brand-700 font-bold px-1.5 py-0.5 rounded-md ml-auto">
-                AI
-              </span>
+              <p className="relative text-[13px] text-slate-700 leading-relaxed">
+                {prospect.aiSummary}
+              </p>
             </div>
-            <p className="relative text-[13px] text-slate-700 leading-relaxed">
-              {prospect.aiSummary}
-            </p>
-          </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-slate-100/60 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center">
+                  <Sparkles size={12} className="text-slate-400" />
+                </div>
+                <span className="text-sm font-bold text-slate-900">Live Prospect</span>
+              </div>
+              <p className="text-[13px] text-slate-500 leading-relaxed">
+                This prospect was captured via PostHog tracking. AI summary, enrolment probability, and CRM data will appear once more engagement data is collected.
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                  <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Page Views</div>
+                  <div className="text-lg font-bold text-slate-900 mt-1">{prospect.page_views || 0}</div>
+                </div>
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                  <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Source</div>
+                  <div className="text-sm font-bold text-slate-900 mt-1">{prospect.source || 'Direct'}</div>
+                </div>
+                {prospect.city && (
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Location</div>
+                    <div className="text-sm font-bold text-slate-900 mt-1">{prospect.city}</div>
+                  </div>
+                )}
+                {prospect.device && (
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Device</div>
+                    <div className="text-sm font-bold text-slate-900 mt-1">{prospect.device}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Enrolment Probability Factors */}
           {prospect.probabilityFactors && (
@@ -438,10 +590,10 @@ export default function ProspectProfile({ onToast }) {
             </div>
             <div className="bg-slate-50/80 rounded-xl p-4 border border-slate-100/60">
               <p className="text-[13px] text-slate-600 italic leading-relaxed font-display text-base">
-                &ldquo;Hi {prospect.name.split(' ')[0]}, this is Amanda from Alleyn's. I wanted
-                to personally follow up on {prospect.childName}&rsquo;s enquiry and make sure you
-                have everything you need. I noticed you&rsquo;ve been looking at our fees
-                information — would you like me to walk you through our bursary options?&rdquo;
+                &ldquo;Hi {(prospect.name || '').split(' ')[0]}, this is Amanda from Alleyn's. I wanted
+                to personally follow up on {prospect.childName ? `${prospect.childName}'s` : 'your'} enquiry and make sure you
+                have everything you need. I noticed you&rsquo;ve been looking at our
+                information — would you like me to walk you through our options?&rdquo;
               </p>
             </div>
           </div>
@@ -491,7 +643,7 @@ export default function ProspectProfile({ onToast }) {
                   />
                 </div>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  {prospect.events.length} events &middot; {prospect.createdAt} to now
+                  {events.length} events {prospect.createdAt ? `· ${prospect.createdAt} to now` : prospect.first_seen ? `· since ${prospect.first_seen.slice(0, 10)}` : ''}
                 </p>
               </div>
               <div className="flex gap-3 text-[10px] text-slate-400 font-medium">
@@ -515,7 +667,7 @@ export default function ProspectProfile({ onToast }) {
               <div className="flex-1">
                 <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Engagement over time</div>
                 <div className="flex h-1.5 rounded-full overflow-hidden gap-px">
-                  {prospect.events.map((ev, i) => (
+                  {events.map((ev, i) => (
                     <div
                       key={i}
                       className="flex-1 rounded-full"
@@ -537,13 +689,13 @@ export default function ProspectProfile({ onToast }) {
               <div className="border-l border-slate-200 pl-3 flex gap-4">
                 <div className="text-center">
                   <div className="stat-number text-lg text-slate-900">
-                    {prospect.events.filter((e) => e.type === 'page_view').length}
+                    {events.filter((e) => e.type === 'page_view').length}
                   </div>
                   <div className="text-[10px] text-slate-400">Views</div>
                 </div>
                 <div className="text-center">
                   <div className="stat-number text-lg text-brand-600">
-                    {prospect.events.filter((e) => isConversion(e.type)).length}
+                    {events.filter((e) => isConversion(e.type)).length}
                   </div>
                   <div className="text-[10px] text-slate-400">Actions</div>
                 </div>
