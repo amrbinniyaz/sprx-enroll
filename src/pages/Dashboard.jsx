@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { ChevronRight, Flame, Eye, Snowflake, FileText, Mail, MousePointerClick, ArrowUpRight } from 'lucide-react'
+import { ChevronRight, Flame, Eye, Snowflake, FileText, Mail, MousePointerClick, ArrowUpRight, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PROSPECTS, ACTIVITY_FEED } from '../data/prospects'
 import { getBand, getPattern } from '../lib/utils'
@@ -13,13 +13,31 @@ import { usePageLoad } from '../hooks/usePageLoad'
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } }
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } } }
 
-const ACTIVITY_ICONS = {
-  hot: <Flame size={15} className="text-red-500" />,
-  view: <Eye size={15} className="text-brand-600" />,
-  cold: <Snowflake size={15} className="text-slate-400" />,
-  form: <FileText size={15} className="text-emerald-500" />,
-  email: <Mail size={15} className="text-amber-500" />,
-  click: <MousePointerClick size={15} className="text-blue-500" />,
+const ACTIVITY_RING_COLORS = {
+  hot: { ring: 'border-red-500', dot: 'bg-red-500' },
+  view: { ring: 'border-brand-400', dot: 'bg-brand-500' },
+  cold: { ring: 'border-slate-300', dot: 'bg-slate-400' },
+  form: { ring: 'border-red-500', dot: 'bg-red-500' },
+  email: { ring: 'border-amber-400', dot: 'bg-amber-500' },
+  click: { ring: 'border-amber-400', dot: 'bg-amber-500' },
+}
+
+const TAG_COLORS = {
+  slate: 'bg-slate-50 text-slate-600 border-slate-200',
+  blue: 'bg-blue-50 text-blue-700 border-blue-200',
+  amber: 'bg-amber-50 text-amber-700 border-amber-200',
+  emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  orange: 'bg-orange-50 text-orange-700 border-orange-200',
+}
+
+function renderBoldText(text) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/)
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-bold text-slate-900">{part.slice(2, -2)}</strong>
+    }
+    return <span key={i}>{part}</span>
+  })
 }
 
 function StatCard({ label, value, sub, color, emoji, trend }) {
@@ -231,43 +249,62 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      {/* Activity Feed */}
+      {/* Real-Time Intent Feed */}
       <motion.div
         variants={item}
         className="bg-white rounded-2xl border border-slate-100/60 overflow-hidden shadow-sm"
       >
-        <div className="px-5 py-4 border-b border-slate-100/60 flex items-center justify-between">
-          <div>
-            <h3 className="font-display text-lg text-slate-900 italic">Live Activity Feed</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Real-time updates from your website</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-            </span>
-            <span className="text-[11px] font-bold text-emerald-600">Live</span>
-          </div>
+        <div className="px-5 py-4 border-b border-slate-100/60 flex items-center gap-3">
+          <Clock size={20} className="text-slate-400" />
+          <h3 className="font-display text-xl text-slate-900 italic">Real-Time Intent Feed</h3>
         </div>
-        {ACTIVITY_FEED.map((a, i) => (
-          <div
-            key={a.id}
-            className={`px-5 py-3 flex items-start gap-3 ${
-              i < ACTIVITY_FEED.length - 1 ? 'border-b border-slate-50' : ''
-            }`}
-          >
-            <div className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-100/60 flex items-center justify-center flex-shrink-0 mt-0.5">
-              {ACTIVITY_ICONS[a.type]}
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[13px]">
-                <strong className="text-slate-900">{a.prospect}</strong>{' '}
-                <span className="text-slate-500">{a.text}</span>
-              </span>
-            </div>
-            <span className="text-[11px] text-slate-400 flex-shrink-0 mt-0.5 font-medium">{a.time}</span>
-          </div>
-        ))}
+        <div className="divide-y divide-slate-100/80">
+          {ACTIVITY_FEED.map((a) => {
+            const ring = ACTIVITY_RING_COLORS[a.type] || ACTIVITY_RING_COLORS.view
+            return (
+              <div key={a.id} className="px-6 py-5 flex items-start gap-4">
+                <div className={`w-6 h-6 rounded-full border-[1.5px] ${ring.ring} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                  <div className={`w-2 h-2 rounded-full ${ring.dot}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[15px] font-bold text-slate-900">{a.prospect}</span>
+                    {a.location && (
+                      <span className="text-[13px] text-slate-400">({a.location})</span>
+                    )}
+                  </div>
+                  <p className="text-[14px] text-slate-500 mt-1 leading-relaxed">
+                    {renderBoldText(a.text)}
+                  </p>
+                  {(a.tag || a.actions?.length > 0) && (
+                    <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+                      {a.tag && (
+                        <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-md border ${TAG_COLORS[a.tag.color] || TAG_COLORS.slate}`}>
+                          {a.tag.label}
+                        </span>
+                      )}
+                      {a.actions?.map((action) => (
+                        <button
+                          key={action}
+                          className={`text-[11px] font-semibold px-2.5 py-1 rounded-md border cursor-pointer transition-colors ${
+                            action === 'Call Lead'
+                              ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                          }`}
+                        >
+                          {action}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <span className="text-[11px] text-slate-400 flex-shrink-0 mt-1 font-semibold uppercase tracking-wide whitespace-nowrap">
+                  {a.time}
+                </span>
+              </div>
+            )
+          })}
+        </div>
       </motion.div>
 
       {/* GA4 Acquisition Insights */}
