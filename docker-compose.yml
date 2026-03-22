@@ -14,7 +14,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    env_file:
-      - ./backend/.env
     environment:
-      - CORS_ORIGINS=["http://localhost","http://localhost:80","https://sprxenroll-iq-app-zlf3bk-b82472-72-60-20-16.traefik.me","http://sprxenroll-iq-app-zlf3bk-b82472-72-60-20-16.traefik.me"]
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY}
+      - POSTHOG_PROJECT_ID=${POSTHOG_PROJECT_ID}
+      - POSTHOG_HOST=${POSTHOG_HOST:-https://us.i.posthog.com}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["http://localhost","http://localhost:80"]}
