@@ -5,6 +5,9 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - backend
+    networks:
+      - dokploy-network
+      - default
 
   backend:
     build:
@@ -15,3 +18,9 @@ services:
       - POSTHOG_PROJECT_ID=${POSTHOG_PROJECT_ID}
       - POSTHOG_HOST=${POSTHOG_HOST:-https://us.i.posthog.com}
       - CORS_ORIGINS=["http://localhost","http://localhost:80","http://sprxenroll-iq-enrolliqstack-jdkjdt-3d5171-72-60-20-16.traefik.me","https://sprxenroll-iq-enrolliqstack-jdkjdt-3d5171-72-60-20-16.traefik.me"]
+    networks:
+      - default
+
+networks:
+  dokploy-network:
+    external: true
