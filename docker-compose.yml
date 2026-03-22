@@ -17,4 +17,4 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      - CORS_ORIGINS=["http://localhost","http://localhost:80"]
+      - CORS_ORIGINS=["http://localhost","http://localhost:80","https://sprxenroll-iq-app-zlf3bk-b82472-72-60-20-16.traefik.me","http://sprxenroll-iq-app-zlf3bk-b82472-72-60-20-16.traefik.me"]
