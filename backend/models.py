@@ -57,6 +57,14 @@ class TrafficSource(BaseModel):
     sessions: int
 
 
+class ActivityItem(BaseModel):
+    id: str
+    type: str  # hot, view, form, click, cold
+    prospect: str
+    text: str
+    time: str
+
+
 class HealthResponse(BaseModel):
     status: str = "ok"
     posthog_connected: bool = False

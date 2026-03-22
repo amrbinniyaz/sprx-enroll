@@ -2,7 +2,7 @@ SprX Enroll IQ
 AI-powered admissions platform for independent schools
 
 Product Requirements Document
-Version: 2.1 Date: March 2026 Author: Amr Niyaz Status: Draft
+Version: 2.2 Date: March 2026 Author: Amr Niyaz Status: Draft
 
 1. Executive Summary
 SprX EnrollIQ is a website-native admissions intelligence platform built exclusively for independent schools. It tracks prospect behaviour from the first anonymous website visit through to enrolment, scoring each family's conversion likelihood in real time and alerting admissions teams at the precise moment to act.
@@ -183,37 +183,40 @@ ML-based scoring model (replacing rule-based with trained model)
 
 8. Features & Requirements
 
-8.1 Tracking Script
-Description A lightweight JavaScript snippet (<5kb, async) deployed across all SprXcms school websites. Tracks all page interactions and fires events to the SprX EnrollIQ API.
+8.1 Tracking Script (PostHog-Powered)
+Description A lightweight JavaScript wrapper (track.js, async) deployed across all SprXcms school websites. Loads the PostHog JS SDK and configures it with the school's PostHog project API key. All events are sent to PostHog Cloud, which serves as the event store and analytics engine. The FastAPI backend reads data from PostHog via its API — it does not receive events directly.
 Functional Requirements
-Create a unique visitor cookie on first visit (UUID v4)
-Track page views including URL, page title, timestamp
-Track scroll depth at 25%, 50%, 75%, 100% intervals
-Track time on page
-Track outbound link clicks
+Load PostHog JS SDK and initialise with school's PostHog project API key
+Register school_id as a super property on all events
+Track page views via PostHog's built-in autocapture (capture_pageview: true)
+Track scroll depth at 25%, 50%, 75%, 100% intervals (custom event: scroll_depth_reached)
+Track time on page (custom event: time_on_page)
+Track page leave events via PostHog (capture_pageleave: true)
 Listen for enquiry form submission events
-On form submission: capture name, email, phone, child details
-Stitch captured identity to all historical cookie-based sessions
-Send all events to SprX EnrollIQ FastAPI backend
+On form submission: capture name, email, child_name, year_group
+Stitch captured identity to all historical anonymous sessions via posthog.identify()
+Custom event: enquiry_form_submitted with form field data
 Load asynchronously — must not impact page speed
 Compatible with SprXcms, GTM, and manual <head> installation
 Non-Functional Requirements
-Script size: <5kb minified and gzipped
+Script size: <5kb minified and gzipped (wrapper only; PostHog SDK loaded from CDN)
 Must not block page render
 GDPR compliant — anonymous until form submission
 Must work across all modern browsers (Chrome, Safari, Firefox, Edge)
+Persistence via localStorage + cookie
 Note on Identification Rate The script identifies prospects only at the point of voluntary form submission. Pre-submission tracking is anonymous by design (GDPR). Schools should expect approximately 5–10% of anonymous visitors to become identified prospects — this is expected behaviour, not a limitation, and mirrors how all compliant website tracking tools operate.
 
-8.2 GA4 Integration
-Description Pull supplementary session data from existing GA4 properties already installed on school websites to enrich prospect profiles without rebuilding what GA already tracks.
+8.2 GA4 Integration (Optional — PostHog Captures Core Metrics)
+Description PostHog now captures most acquisition and session data that was previously dependent on GA4: traffic source, referrer, device type, geographic region (via GeoIP), session count, UTM parameters, and browser details. GA4 integration is now optional and supplementary — useful for schools that want campaign-level detail from existing GA4 properties, but no longer a prerequisite for core functionality.
 Functional Requirements
-Connect to GA4 Data API via school's GA property ID
-Pull: traffic source, medium, campaign, landing page, session count, device type, geographic region
-Match GA sessions to EnrollIQ visitor cookie where possible
-Display acquisition data on prospect profile
-Refresh GA data every 24 hours per prospect
-Aggregate school-wide GA4 data for dashboard acquisition insights
+Connect to GA4 Data API via school's GA property ID (optional)
+Pull supplementary data: campaign name, medium, landing page detail
+Merge GA4 campaign data with PostHog tracking data where available
+Display acquisition data on prospect profile (PostHog data primary, GA4 supplementary)
+Refresh GA data every 24 hours per prospect (when connected)
+Aggregate school-wide acquisition insights from PostHog (traffic sources, device split, referrers)
 Show traffic source breakdown, conversion by channel, device split, top landing pages, campaign performance, and visitor regions on dashboard
+Note: Core acquisition insights (source, device, geo, sessions) are available from PostHog alone. GA4 connection adds deeper campaign attribution for schools running paid ads.
 
 8.3 Prospect Profiles
 Description A unified profile for each identified prospect combining all tracked data points, engagement score, enrolment probability, HubSpot CRM data, and AI-generated summary.
@@ -427,9 +430,9 @@ Page 1 — Pipeline Overview
 Total prospects this month
 Breakdown by score band (Hot / Warm / Interested / Cold)
 Top 5 prospects to contact today (with phone numbers)
-Recent activity feed
+Live Activity Feed — real-time event stream from PostHog (pageviews, form submissions, scroll events), auto-refreshes every 30 seconds, shows identified names or numbered anonymous visitors
 Pipeline revenue forecast summary
-GA4 acquisition insights (traffic sources, conversion by channel, top campaigns, landing pages, device split, visitor regions)
+Acquisition insights from PostHog (traffic sources, conversion by channel, top campaigns, landing pages, device split, visitor regions)
 Page 2 — Prospect List
 Sortable by score, last seen, year of entry, enrolment probability
 Filterable by band, year group, status
@@ -646,23 +649,25 @@ Stack
 Layer
 Technology
 Tracking Script
-Vanilla JavaScript (ES6)
+track.js wrapper + PostHog JS SDK (loaded from CDN)
+Event Tracking & Analytics
+PostHog Cloud (event ingestion, person profiles, insights API)
 Backend API
-FastAPI (Python)
+FastAPI (Python) — reads from PostHog API, serves dashboard data
 Database
-PostgreSQL
+PostgreSQL (school config, alert preferences, notes, nurture sequences)
 Scoring Engine
-Python
+Python (reads PostHog person properties, computes engagement score)
 Predictive Model
 Python (pattern matching V1.5, ML V2)
 AI Summaries
 Claude API (claude-sonnet-4-20250514)
 Dashboard Frontend
-React + Tailwind CSS
+React + Tailwind CSS + Vite
 Email Delivery
 Resend API
 GA Integration
-Google Analytics Data API v1
+Google Analytics Data API v1 (optional — PostHog covers core metrics)
 CRM Integration
 HubSpot API v3
 Hosting
@@ -673,13 +678,13 @@ JWT + school-scoped data isolation
 Data Flow
 School Website
       ↓
-SprX EnrollIQ JS Snippet (async)
+track.js (loads PostHog JS SDK, configures with school API key)
       ↓
-FastAPI Event Endpoint
+PostHog Cloud (event store, person profiles, analytics)
       ↓
-PostgreSQL (events table)
+FastAPI Backend (reads PostHog API: persons, events, insights)
       ↓
-Scoring Engine (Python)
+Scoring Engine (computes engagement score from PostHog data)
       ↓
 Claude API (summary generation)
       ↓
@@ -691,9 +696,9 @@ Predictive Model (historical outcomes → enrolment probability)
       ↓
 Revenue Intelligence (funnel, forecast, attribution, competitor analysis)
 
-GA4 Data API → SprX EnrollIQ API (enrichment, every 24 hours)
+GA4 Data API → SprX EnrollIQ API (optional enrichment, every 24 hours)
       ↓
-Acquisition Insights (traffic sources, campaign performance, geo)
+Supplementary campaign attribution data
 Security & Compliance
 All data encrypted at rest (PostgreSQL)
 HTTPS only (Let's Encrypt)
@@ -721,8 +726,10 @@ Manual Installation
 html
 <script src="https://app.sprxenrolliq.io/track.js"
         data-school-id="YOUR_SCHOOL_ID"
+        data-api-key="YOUR_POSTHOG_PROJECT_API_KEY"
         async>
 </script>
+Note: Each school requires a PostHog project to be provisioned. The data-api-key is the PostHog public project API key (phc_...) used for event capture. A separate personal API key (phx_...) is configured on the backend for reading data from the PostHog API.
 HubSpot Connection
 OAuth-based connection flow in the Settings page. School admin authorises SprX EnrollIQ to read/write their HubSpot data. Automatic deal stage mapping with one-click setup. Historical deal import on first connection (past 2–3 years).
 
@@ -872,7 +879,8 @@ Technical
 🟢 V1.5
 
 
-Document version 2.1 — Updated: product renamed to SprX EnrollIQ, HubSpot adoption confirmed across majority of client base, data ownership section added (pending internal review), open questions refined.
+Document version 2.2 — Updated: PostHog integrated as event tracking and analytics engine (replacing custom event ingestion), GA4 integration reclassified as optional, tracking script updated to reflect PostHog JS SDK wrapper architecture, data flow diagram updated, Live Activity Feed added to dashboard, installation instructions updated with PostHog API key requirements.
+Previous: v2.1 — product renamed to SprX EnrollIQ, HubSpot adoption confirmed across majority of client base, data ownership section added (pending internal review), open questions refined.
 Subject to revision following pilot school discovery interviews.
 
 

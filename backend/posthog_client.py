@@ -1,7 +1,9 @@
 import httpx
 from config import get_settings
 from scoring import compute_score, get_band
+from datetime import datetime, timezone
 from models import (
+    ActivityItem,
     ProspectSummary,
     ProspectDetail,
     TimelineEvent,
@@ -232,3 +234,150 @@ async def get_traffic_sources() -> list[TrafficSource]:
     except Exception as e:
         print(f"[PostHog] Error fetching traffic sources: {e}")
         return []
+
+
+# Map PostHog event names to activity feed types and human-readable text
+_EVENT_MAP = {
+    "$pageview": ("view", "viewed {page}"),
+    "enquiry_form_submitted": ("form", "submitted an enquiry form"),
+    "scroll_depth_reached": ("view", "scrolled to {depth}% on {page}"),
+}
+
+# Events we intentionally skip (noisy / low value)
+_SKIP_EVENTS = {"$pageleave", "time_on_page", "$feature_flag_called"}
+
+# Pages we want to show friendly names for
+_PAGE_NAMES = {
+    "/test-fees.html": "Fees & Bursaries",
+    "/test-admissions.html": "Admissions",
+    "/test-school-life.html": "School Life",
+    "/test-open-days.html": "Open Days",
+    "/test-contact.html": "Contact",
+    "/test-school-site.html": "Home",
+}
+
+
+def _friendly_page(path: str) -> str:
+    return _PAGE_NAMES.get(path, path or "a page")
+
+
+def _time_ago(timestamp_str: str) -> str:
+    try:
+        ts = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+        now = datetime.now(timezone.utc)
+        diff = now - ts
+        seconds = int(diff.total_seconds())
+        if seconds < 60:
+            return "Just now"
+        minutes = seconds // 60
+        if minutes < 60:
+            return f"{minutes} min{'s' if minutes != 1 else ''} ago"
+        hours = minutes // 60
+        if hours < 24:
+            return f"{hours} hour{'s' if hours != 1 else ''} ago"
+        days = hours // 24
+        if days == 1:
+            return "Yesterday"
+        return f"{days} days ago"
+    except Exception:
+        return timestamp_str
+
+
+async def get_recent_activity(limit: int = 20) -> list[ActivityItem]:
+    """Fetch recent events from PostHog and format as activity feed items."""
+    items: list[ActivityItem] = []
+
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            r = await client.get(
+                f"{_base_url()}/events/",
+                headers=_headers(),
+                params={
+                    "limit": limit,
+                    "orderBy": '[\"-timestamp\"]',
+                },
+            )
+            r.raise_for_status()
+            data = r.json()
+
+        # Collect distinct_ids to resolve names in bulk
+        distinct_ids = {
+            ev.get("distinct_id")
+            for ev in data.get("results", [])
+            if ev.get("distinct_id")
+        }
+
+        # Try to resolve person names from PostHog persons API
+        person_names: dict[str, str] = {}
+        if distinct_ids:
+            try:
+                for did in distinct_ids:
+                    pr = await httpx.AsyncClient(timeout=10).get(
+                        f"{_base_url()}/persons/",
+                        headers=_headers(),
+                        params={"distinct_id": did},
+                    )
+                    if pr.status_code == 200:
+                        results = pr.json().get("results", [])
+                        if results:
+                            pprops = results[0].get("properties", {})
+                            name = (
+                                pprops.get("name")
+                                or pprops.get("$name")
+                                or pprops.get("email")
+                                or pprops.get("$email")
+                            )
+                            if name:
+                                person_names[did] = name
+            except Exception:
+                pass  # Name resolution is best-effort
+
+        # Assign numbered labels to anonymous visitors so they're distinguishable
+        visitor_counter = 0
+        anon_labels: dict[str, str] = {}
+
+        for ev in data.get("results", []):
+            event_name = ev.get("event", "")
+
+            # Skip noisy events
+            if event_name in _SKIP_EVENTS or event_name.startswith("$feature_flag"):
+                continue
+
+            mapping = _EVENT_MAP.get(event_name)
+            if not mapping:
+                continue
+
+            activity_type, text_template = mapping
+            props = ev.get("properties", {})
+
+            # Resolve person name — use real name if identified, numbered label if not
+            did = ev.get("distinct_id", "")
+            if did in person_names:
+                person_name = person_names[did]
+            else:
+                if did not in anon_labels:
+                    visitor_counter += 1
+                    anon_labels[did] = f"Visitor #{visitor_counter}"
+                person_name = anon_labels[did]
+
+            # Build description text
+            page = _friendly_page(
+                props.get("$pathname") or props.get("page_path", "")
+            )
+            depth = props.get("depth", "")
+            text = text_template.format(page=page, depth=depth)
+
+            items.append(
+                ActivityItem(
+                    id=ev.get("id", ev.get("uuid", "")),
+                    type=activity_type,
+                    prospect=str(person_name),
+                    text=text,
+                    time=_time_ago(ev.get("timestamp", "")),
+                )
+            )
+
+    except Exception as e:
+        print(f"[PostHog] Error fetching activity: {e}")
+
+    return items

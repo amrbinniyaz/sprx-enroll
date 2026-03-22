@@ -7,3 +7,7 @@ export function getOverview() {
 export function getTrafficSources() {
   return apiFetch('/analytics/sources')
 }
+
+export function getActivity() {
+  return apiFetch('/activity')
+}

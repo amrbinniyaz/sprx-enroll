@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { ChevronRight, Flame, Eye, Snowflake, FileText, Mail, MousePointerClick, ArrowUpRight } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { ACTIVITY_FEED } from '../data/prospects'
 import { useProspects } from '../hooks/useProspects'
+import { useActivity } from '../hooks/useActivity'
 import { getBand, getPattern } from '../lib/utils'
 import Avatar from '../components/Avatar'
 import BandPill from '../components/BandPill'
@@ -54,6 +54,7 @@ export default function Dashboard() {
   const loading = usePageLoad(900)
   const navigate = useNavigate()
   const { prospects: PROSPECTS } = useProspects()
+  const { activity, isLive: isActivityLive } = useActivity()
 
   if (loading) return <DashboardSkeleton />
   const hot = PROSPECTS.filter((p) => p.band === 'hot')
@@ -245,17 +246,19 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-2">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isActivityLive ? 'bg-emerald-400' : 'bg-slate-300'}`} />
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isActivityLive ? 'bg-emerald-500' : 'bg-slate-400'}`} />
             </span>
-            <span className="text-[11px] font-bold text-emerald-600">Live</span>
+            <span className={`text-[11px] font-bold ${isActivityLive ? 'text-emerald-600' : 'text-slate-400'}`}>
+              {isActivityLive ? 'Live' : 'Demo'}
+            </span>
           </div>
         </div>
-        {ACTIVITY_FEED.map((a, i) => (
+        {activity.map((a, i) => (
           <div
             key={a.id}
             className={`px-5 py-3 flex items-start gap-3 ${
-              i < ACTIVITY_FEED.length - 1 ? 'border-b border-slate-50' : ''
+              i < activity.length - 1 ? 'border-b border-slate-50' : ''
             }`}
           >
             <div className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-100/60 flex items-center justify-center flex-shrink-0 mt-0.5">

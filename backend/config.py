@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     posthog_api_key: str = ""
     posthog_project_id: str = ""
     posthog_host: str = "https://us.i.posthog.com"
-    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
+    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000", "http://192.168.1.119:5173"]
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

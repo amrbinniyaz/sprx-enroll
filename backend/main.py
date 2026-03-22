@@ -1,10 +1,15 @@
+from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from config import get_settings
 from models import HealthResponse
 import posthog_client
 
 app = FastAPI(title="EnrollIQ API", version="0.1.0")
+
+# Serve test school pages from /public so other devices can access them on port 8000
+PUBLIC_DIR = Path(__file__).resolve().parent.parent / "public"
 
 settings = get_settings()
 app.add_middleware(
@@ -43,3 +48,12 @@ async def analytics_overview():
 @app.get("/api/analytics/sources")
 async def analytics_sources():
     return await posthog_client.get_traffic_sources()
+
+
+@app.get("/api/activity")
+async def activity_feed():
+    return await posthog_client.get_recent_activity()
+
+
+# Mount static test pages last (so /api routes take priority)
+app.mount("/", StaticFiles(directory=PUBLIC_DIR, html=True), name="public")
