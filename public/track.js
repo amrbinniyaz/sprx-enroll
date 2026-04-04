@@ -88,50 +88,63 @@
   });
 
   // --- Form Interception for Identity Stitching ---
+  function handleFormCapture(form) {
+    if (!form || form.tagName !== 'FORM') return;
+
+    var emailInput = form.querySelector(
+      'input[type="email"], input[name="email"], input[name*="email"]'
+    );
+    var nameInput = form.querySelector(
+      'input[name="name"], input[name="full_name"], input[name="fullname"], input[name*="name"]:not([name*="email"]):not([name*="child"])'
+    );
+    var childNameInput = form.querySelector(
+      'input[name="child_name"], input[name="childName"], input[name*="child"]'
+    );
+    var yearGroupSelect = form.querySelector(
+      'select[name="year_group"], select[name="yearGroup"], select[name*="year"]'
+    );
+
+    var email = emailInput ? emailInput.value.trim() : null;
+    var name = nameInput ? nameInput.value.trim() : null;
+    var childName = childNameInput ? childNameInput.value.trim() : null;
+    var yearGroup = yearGroupSelect ? yearGroupSelect.options[yearGroupSelect.selectedIndex].text : null;
+    if (yearGroup && yearGroup.toLowerCase().includes('select')) yearGroup = null;
+
+    if (email) {
+      var personProps = {
+        email: email,
+        name: name || undefined,
+        school_id: schoolId,
+      };
+      if (childName) personProps.child_name = childName;
+      if (yearGroup) personProps.year_group = yearGroup;
+
+      // Identity stitching: link anonymous session to real person
+      posthog.identify(email, personProps);
+
+      posthog.capture('enquiry_form_submitted', {
+        email: email,
+        name: name || undefined,
+        child_name: childName || undefined,
+        year_group: yearGroup || undefined,
+        school_id: schoolId,
+        page_path: window.location.pathname,
+      });
+    }
+  }
+
   function interceptForms() {
+    // Native form submit (standard forms)
     document.addEventListener('submit', function (e) {
-      var form = e.target;
-      if (!form || form.tagName !== 'FORM') return;
+      handleFormCapture(e.target);
+    });
 
-      var emailInput = form.querySelector(
-        'input[type="email"], input[name="email"], input[name*="email"]'
-      );
-      var nameInput = form.querySelector(
-        'input[name="name"], input[name="full_name"], input[name="fullname"], input[name*="name"]:not([name*="email"]):not([name*="child"])'
-      );
-      var childNameInput = form.querySelector(
-        'input[name="child_name"], input[name="childName"], input[name*="child"]'
-      );
-      var yearGroupSelect = form.querySelector(
-        'select[name="year_group"], select[name="yearGroup"], select[name*="year"]'
-      );
-
-      var email = emailInput ? emailInput.value.trim() : null;
-      var name = nameInput ? nameInput.value.trim() : null;
-      var childName = childNameInput ? childNameInput.value.trim() : null;
-      var yearGroup = yearGroupSelect ? yearGroupSelect.options[yearGroupSelect.selectedIndex].text : null;
-      if (yearGroup && yearGroup.toLowerCase().includes('select')) yearGroup = null;
-
-      if (email) {
-        var personProps = {
-          email: email,
-          name: name || undefined,
-          school_id: schoolId,
-        };
-        if (childName) personProps.child_name = childName;
-        if (yearGroup) personProps.year_group = yearGroup;
-
-        // Identity stitching: link anonymous session to real person
-        posthog.identify(email, personProps);
-
-        posthog.capture('enquiry_form_submitted', {
-          email: email,
-          name: name || undefined,
-          child_name: childName || undefined,
-          year_group: yearGroup || undefined,
-          school_id: schoolId,
-          page_path: window.location.pathname,
-        });
+    // Button[type=button] click inside a form (AJAX/JS-driven forms)
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('button[type="button"], input[type="button"]');
+      if (btn) {
+        var form = btn.closest('form');
+        if (form) handleFormCapture(form);
       }
     });
   }
