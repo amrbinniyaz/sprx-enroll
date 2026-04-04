@@ -34,6 +34,39 @@ async def check_connection() -> bool:
         return False
 
 
+async def _get_event_counts() -> dict[str, dict]:
+    """Fetch pageview and session counts per person using HogQL."""
+    counts: dict[str, dict] = {}
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            r = await client.post(
+                f"{_base_url()}/query/",
+                headers=_headers(),
+                json={"query": {
+                    "kind": "HogQLQuery",
+                    "query": (
+                        "SELECT distinct_id, "
+                        "countIf(event = '$pageview') AS pageviews, "
+                        "countIf(event = 'enquiry_form_submitted') AS form_submits, "
+                        "count(DISTINCT properties.$session_id) AS sessions "
+                        "FROM events "
+                        "WHERE person.properties.email IS NOT NULL "
+                        "GROUP BY distinct_id"
+                    ),
+                }},
+            )
+            if r.status_code == 200:
+                for row in r.json().get("results", []):
+                    counts[row[0]] = {
+                        "page_views": int(row[1] or 0),
+                        "form_submits": int(row[2] or 0),
+                        "sessions": int(row[3] or 1),
+                    }
+    except Exception as e:
+        print(f"[PostHog] Error fetching event counts: {e}")
+    return counts
+
+
 async def get_prospects() -> list[ProspectSummary]:
     """Fetch identified persons from PostHog and compute engagement scores."""
     prospects: list[ProspectSummary] = []
@@ -48,13 +81,21 @@ async def get_prospects() -> list[ProspectSummary]:
             r.raise_for_status()
             data = r.json()
 
+        event_counts = await _get_event_counts()
+
         for person in data.get("results", []):
             props = person.get("properties", {})
 
-            # Count events for scoring
-            page_views = props.get("$pageview_count", 0)
-            form_submits = 1 if props.get("email") else 0
-            sessions = props.get("$session_count", 1)
+            # distinct_ids is a list of strings in PostHog API
+            distinct_ids = person.get("distinct_ids", []) or [props.get("email")]
+            counts = {}
+            for did in distinct_ids:
+                if did and did in event_counts:
+                    counts = event_counts[did]
+                    break
+            page_views = counts.get("page_views", 0)
+            form_submits = counts.get("form_submits", 1 if props.get("email") else 0)
+            sessions = counts.get("sessions", 1)
             repeat_visits = max(sessions - 1, 0)
 
             score = compute_score(page_views, form_submits, repeat_visits)
@@ -115,9 +156,11 @@ async def get_prospect_detail(person_id: str) -> ProspectDetail | None:
 
         props = person.get("properties", {})
 
-        page_views = props.get("$pageview_count", 0)
-        form_submits = 1 if props.get("email") else 0
-        sessions = props.get("$session_count", 1)
+        # Count directly from fetched events (reliable, no dependency on PostHog computed props)
+        all_events = events_data.get("results", [])
+        page_views = sum(1 for e in all_events if e.get("event") == "$pageview")
+        form_submits = sum(1 for e in all_events if e.get("event") == "enquiry_form_submitted")
+        sessions = len({e.get("properties", {}).get("$session_id") for e in all_events if e.get("properties", {}).get("$session_id")}) or 1
         repeat_visits = max(sessions - 1, 0)
 
         score = compute_score(page_views, form_submits, repeat_visits)
