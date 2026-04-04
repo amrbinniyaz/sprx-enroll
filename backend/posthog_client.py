@@ -326,6 +326,135 @@ def _time_ago(timestamp_str: str) -> str:
         return timestamp_str
 
 
+async def get_dashboard_trends() -> dict:
+    """Fetch DAU, WAU, growth accounting, and retention data for dashboard charts."""
+    out: dict = {"dau": [], "wau": [], "growth": [], "retention": []}
+
+    async with httpx.AsyncClient(timeout=20) as client:
+        # --- DAU: daily unique visitors, last 30 days ---
+        try:
+            r = await client.post(
+                f"{_base_url()}/query/",
+                headers=_headers(),
+                json={"query": {
+                    "kind": "TrendsQuery",
+                    "series": [{"kind": "EventsNode", "event": "$pageview", "math": "dau"}],
+                    "dateRange": {"date_from": "-30d"},
+                    "interval": "day",
+                }},
+            )
+            if r.status_code == 200:
+                results = r.json().get("results", [])
+                if results:
+                    days = results[0].get("days", results[0].get("labels", []))
+                    data = results[0].get("data", [])
+                    out["dau"] = [{"date": d, "value": int(v)} for d, v in zip(days, data) if int(v) > 0 or True]
+            else:
+                print(f"[PostHog] DAU status {r.status_code}: {r.text[:200]}")
+        except Exception as e:
+            print(f"[PostHog] DAU trend error: {e}")
+
+        # --- WAU: unique visitors per week, last 90 days ---
+        try:
+            r = await client.post(
+                f"{_base_url()}/query/",
+                headers=_headers(),
+                json={"query": {
+                    "kind": "TrendsQuery",
+                    "series": [{"kind": "EventsNode", "event": "$pageview", "math": "dau"}],
+                    "dateRange": {"date_from": "-90d"},
+                    "interval": "week",
+                }},
+            )
+            if r.status_code == 200:
+                results = r.json().get("results", [])
+                if results:
+                    days = results[0].get("days", results[0].get("labels", []))
+                    data = results[0].get("data", [])
+                    out["wau"] = [{"date": d, "value": int(v)} for d, v in zip(days, data)]
+            else:
+                print(f"[PostHog] WAU status {r.status_code}: {r.text[:200]}")
+        except Exception as e:
+            print(f"[PostHog] WAU trend error: {e}")
+
+        # --- Growth accounting: new vs returning per week via LifecycleQuery ---
+        try:
+            r = await client.post(
+                f"{_base_url()}/query/",
+                headers=_headers(),
+                json={"query": {
+                    "kind": "LifecycleQuery",
+                    "series": [{"kind": "EventsNode", "event": "$pageview"}],
+                    "dateRange": {"date_from": "-30d"},
+                    "interval": "week",
+                }},
+            )
+            if r.status_code == 200:
+                results = r.json().get("results", [])
+                weeks: dict = {}
+                for series in results:
+                    status = series.get("status", "")
+                    days = series.get("days", series.get("labels", []))
+                    data = series.get("data", [])
+                    for day, val in zip(days, data):
+                        if day not in weeks:
+                            weeks[day] = {"week": day, "new": 0, "returning": 0}
+                        v = abs(int(val))  # dormant values can be negative
+                        if status == "new":
+                            weeks[day]["new"] = v
+                        elif status in ("returning", "resurrecting"):
+                            weeks[day]["returning"] += v
+                out["growth"] = [
+                    v for v in weeks.values()
+                    if v["new"] + v["returning"] > 0
+                ]
+            else:
+                print(f"[PostHog] Growth status {r.status_code}: {r.text[:200]}")
+        except Exception as e:
+            print(f"[PostHog] Growth accounting error: {e}")
+
+        # --- Retention: weekly cohort retention ---
+        try:
+            r = await client.post(
+                f"{_base_url()}/query/",
+                headers=_headers(),
+                json={"query": {
+                    "kind": "RetentionQuery",
+                    "retentionFilter": {
+                        "targetEntity": {"name": "$pageview", "type": "events"},
+                        "returningEntity": {"name": "$pageview", "type": "events"},
+                        "period": "Week",
+                        "totalIntervals": 5,
+                        "retentionType": "retention_first_time",
+                    },
+                    "dateRange": {"date_from": "-30d"},
+                }},
+            )
+            if r.status_code == 200:
+                results = r.json().get("results", [])
+                cohorts = []
+                for cohort in results:
+                    values = cohort.get("values", [])
+                    count = values[0].get("count", 0) if values else cohort.get("count", 0)
+                    if count == 0:
+                        continue
+                    row: dict = {
+                        "cohort": str(cohort.get("date", ""))[:10],
+                        "size": count,
+                    }
+                    for i, v in enumerate(values[:5]):
+                        c = v.get("count", 0)
+                        row[f"week{i}"] = round((c / count) * 100) if count else 0
+                    cohorts.append(row)
+                out["retention"] = cohorts
+            else:
+                print(f"[PostHog] Retention status {r.status_code}: {r.text[:200]}")
+        except Exception as e:
+            print(f"[PostHog] Retention error: {e}")
+
+    return out
+
+
 async def get_recent_activity(limit: int = 20) -> list[ActivityItem]:
     """Fetch recent events from PostHog and format as activity feed items."""
     items: list[ActivityItem] = []

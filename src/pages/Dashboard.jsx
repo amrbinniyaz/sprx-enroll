@@ -10,6 +10,7 @@ import PatternPill from '../components/PatternPill'
 import AcquisitionInsights from '../components/AcquisitionInsights'
 import { DashboardSkeleton } from '../components/Skeleton'
 import { usePageLoad } from '../hooks/usePageLoad'
+import DashboardCharts from '../components/DashboardCharts'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } }
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } } }
@@ -116,6 +117,11 @@ export default function Dashboard() {
         <StatCard label="Avg. Score" value={avg} sub="Across active pipeline" color="text-brand-700" emoji="&#128200;" />
         <StatCard label="Pipeline Value" value="£2.1M" sub="Projected annual fees" color="text-emerald-700" emoji="&#128176;" trend />
       </div>
+
+      {/* PostHog site analytics charts */}
+      <motion.div variants={item}>
+        <DashboardCharts />
+      </motion.div>
 
       <div className="grid grid-cols-3 gap-5">
         {/* Pipeline Breakdown */}

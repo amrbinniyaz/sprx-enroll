@@ -11,3 +11,7 @@ export function getTrafficSources() {
 export function getActivity() {
   return apiFetch('/activity')
 }
+
+export function getDashboardTrends() {
+  return apiFetch('/analytics/trends')
+}

@@ -50,6 +50,11 @@ async def analytics_sources():
     return await posthog_client.get_traffic_sources()
 
 
+@app.get("/api/analytics/trends")
+async def analytics_trends():
+    return await posthog_client.get_dashboard_trends()
+
+
 @app.get("/api/activity")
 async def activity_feed():
     return await posthog_client.get_recent_activity()
