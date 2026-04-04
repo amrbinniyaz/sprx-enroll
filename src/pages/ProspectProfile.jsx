@@ -14,6 +14,7 @@ import AcquisitionCard from '../components/AcquisitionCard'
 import HubSpotCard from '../components/HubSpotCard'
 import { ProfileSkeleton } from '../components/Skeleton'
 import { usePageLoad } from '../hooks/usePageLoad'
+import ProspectCharts from '../components/ProspectCharts'
 
 const EVENT_STYLES = {
   page_view: { icon: Eye, bg: 'bg-slate-50 text-slate-400', label: 'Viewed' },
@@ -481,6 +482,8 @@ export default function ProspectProfile({ onToast }) {
           </button>
         </div>
       </div>
+
+      <ProspectCharts rawEvents={rawEvents} />
 
       <div className="grid grid-cols-3 gap-5">
         {/* Left Column */}
