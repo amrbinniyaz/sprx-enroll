@@ -92,20 +92,30 @@
     if (!form || form.tagName !== 'FORM') return;
 
     var emailInput = form.querySelector(
-      'input[type="email"], input[name="email"], input[name*="email"]'
+      'input[type="email"], input[name="email"], input[name*="email" i]'
+    );
+    var firstNameInput = form.querySelector(
+      'input[name="first_name" i], input[name="firstname" i], input[name*="first" i]:not([name*="email" i])'
+    );
+    var lastNameInput = form.querySelector(
+      'input[name="last_name" i], input[name="lastname" i], input[name="surname" i], input[name*="sur" i], input[name*="last" i]:not([name*="email" i])'
     );
     var nameInput = form.querySelector(
-      'input[name="name"], input[name="full_name"], input[name="fullname"], input[name*="name"]:not([name*="email"]):not([name*="child"])'
+      'input[name="name"], input[name="full_name" i], input[name="fullname" i], input[name*="name" i]:not([name*="email" i]):not([name*="child" i]):not([name*="first" i]):not([name*="sur" i]):not([name*="last" i])'
     );
     var childNameInput = form.querySelector(
-      'input[name="child_name"], input[name="childName"], input[name*="child"]'
+      'input[name="child_name" i], input[name="childName" i], input[name*="child" i]'
     );
     var yearGroupSelect = form.querySelector(
-      'select[name="year_group"], select[name="yearGroup"], select[name*="year"]'
+      'select[name="year_group" i], select[name="yearGroup" i], select[name*="year" i]'
     );
 
     var email = emailInput ? emailInput.value.trim() : null;
-    var name = nameInput ? nameInput.value.trim() : null;
+    var firstName = firstNameInput ? firstNameInput.value.trim() : null;
+    var lastName = lastNameInput ? lastNameInput.value.trim() : null;
+    var name = firstName && lastName
+      ? (firstName + ' ' + lastName)
+      : (firstName || lastName || (nameInput ? nameInput.value.trim() : null));
     var childName = childNameInput ? childNameInput.value.trim() : null;
     var yearGroup = yearGroupSelect ? yearGroupSelect.options[yearGroupSelect.selectedIndex].text : null;
     if (yearGroup && yearGroup.toLowerCase().includes('select')) yearGroup = null;
