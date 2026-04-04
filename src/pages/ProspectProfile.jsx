@@ -325,10 +325,11 @@ function SessionGroup({ session, allEventsFlat }) {
 export default function ProspectProfile({ onToast }) {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { prospect: liveProspect } = useProspect(id)
-  const prospect = liveProspect || PROSPECTS.find((p) => p.id === Number(id))
+  const { prospect: liveProspect, loading: liveLoading } = useProspect(id)
+  const prospect = liveProspect || PROSPECTS.find((p) => String(p.id) === String(id))
 
-  const loading = usePageLoad(600)
+  const timerLoading = usePageLoad(600)
+  const loading = timerLoading || liveLoading
   const [notes, setNotes] = useState(prospect?.notes || '')
   const [status, setStatus] = useState(prospect?.status || 'active')
 
