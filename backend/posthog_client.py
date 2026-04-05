@@ -529,7 +529,7 @@ async def get_recent_activity(limit: int = 20) -> list[ActivityItem]:
             else:
                 if did not in anon_labels:
                     visitor_counter += 1
-                    anon_labels[did] = f"Visitor #{visitor_counter}"
+                    anon_labels[did] = f"Anonymous Visitor {visitor_counter}"
                 person_name = anon_labels[did]
 
             # Build description text

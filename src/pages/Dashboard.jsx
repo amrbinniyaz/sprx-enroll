@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { ChevronRight, Flame, Eye, Snowflake, FileText, Mail, MousePointerClick, ArrowUpRight } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { ChevronRight, ChevronDown, Flame, Eye, Snowflake, FileText, Mail, MousePointerClick, ArrowUpRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useProspects } from '../hooks/useProspects'
 import { useActivity } from '../hooks/useActivity'
 import { getBand, getPattern } from '../lib/utils'
@@ -15,13 +16,108 @@ import DashboardCharts from '../components/DashboardCharts'
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } }
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } } }
 
-const ACTIVITY_ICONS = {
-  hot: <Flame size={15} className="text-red-500" />,
-  view: <Eye size={15} className="text-brand-600" />,
-  cold: <Snowflake size={15} className="text-slate-400" />,
-  form: <FileText size={15} className="text-emerald-500" />,
-  email: <Mail size={15} className="text-amber-500" />,
-  click: <MousePointerClick size={15} className="text-blue-500" />,
+const ACTIVITY_CONFIG = {
+  hot:    { icon: <Flame size={14} className="text-red-500" />,              bg: 'bg-red-50',     border: 'border-red-100',     label: 'Hot Alert',   labelCls: 'text-red-600 bg-red-50 border-red-100' },
+  view:   { icon: <Eye size={14} className="text-brand-600" />,              bg: 'bg-brand-50',   border: 'border-brand-100',   label: 'Page View',   labelCls: 'text-brand-700 bg-brand-50 border-brand-100' },
+  cold:   { icon: <Snowflake size={14} className="text-slate-400" />,        bg: 'bg-slate-100',  border: 'border-slate-200',   label: 'Going Cold',  labelCls: 'text-slate-500 bg-slate-100 border-slate-200' },
+  form:   { icon: <FileText size={14} className="text-emerald-600" />,       bg: 'bg-emerald-50', border: 'border-emerald-100', label: 'Form Submit', labelCls: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
+  email:  { icon: <Mail size={14} className="text-amber-500" />,             bg: 'bg-amber-50',   border: 'border-amber-100',   label: 'Email Open',  labelCls: 'text-amber-600 bg-amber-50 border-amber-100' },
+  click:  { icon: <MousePointerClick size={14} className="text-blue-500" />, bg: 'bg-blue-50',    border: 'border-blue-100',    label: 'Link Click',  labelCls: 'text-blue-600 bg-blue-50 border-blue-100' },
+  scroll: { icon: <Eye size={14} className="text-indigo-500" />,             bg: 'bg-indigo-50',  border: 'border-indigo-100',  label: 'Scroll',      labelCls: 'text-indigo-600 bg-indigo-50 border-indigo-100' },
+}
+
+function parseActivityText(text) {
+  const match = text.match(/(.*?)(\/[\w\-/]+)(.*)/)
+  if (match) return { before: match[1], path: match[2], after: match[3] }
+  return { before: text, path: null, after: '' }
+}
+
+function groupActivity(activity) {
+  const groups = []
+  for (const event of activity) {
+    const last = groups[groups.length - 1]
+    if (last && last.prospect === event.prospect) {
+      last.events.push(event)
+    } else {
+      groups.push({ prospect: event.prospect, events: [event] })
+    }
+  }
+  return groups
+}
+
+function ActivityRow({ event }) {
+  const cfg = ACTIVITY_CONFIG[event.type] || ACTIVITY_CONFIG.view
+  const { before, path, after } = parseActivityText(event.text)
+  return (
+    <div className="flex items-center gap-2 py-1">
+      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md border ${cfg.labelCls} uppercase tracking-wide flex-shrink-0`}>
+        {cfg.label}
+      </span>
+      <p className="text-[12px] text-slate-500 leading-snug truncate flex-1 min-w-0">
+        {before}
+        {path && (
+          <span className="font-mono text-[11px] text-slate-600 bg-slate-100 px-1 py-0.5 rounded mx-0.5">
+            {path}
+          </span>
+        )}
+        {after}
+      </p>
+      <span className="text-[11px] text-slate-400 flex-shrink-0 font-medium tabular-nums">{event.time}</span>
+    </div>
+  )
+}
+
+function ActivityGroup({ group, isLast }) {
+  const [expanded, setExpanded] = useState(false)
+  const rest = group.events.slice(1)
+
+  return (
+    <div className={`px-5 py-3.5 ${!isLast ? 'border-b border-slate-50' : ''}`}>
+      {/* Header row: avatar + name + latest event */}
+      <div className="flex items-start gap-3.5">
+        <Avatar name={group.prospect} size="w-8 h-8 text-xs" />
+        <div className="flex-1 min-w-0">
+          <span className="text-[13px] font-semibold text-slate-900">{group.prospect}</span>
+          <ActivityRow event={group.events[0]} />
+
+          {/* Expanded rows */}
+          <AnimatePresence initial={false}>
+            {expanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                className="overflow-hidden"
+              >
+                <div className="border-l-2 border-slate-100 pl-3 mt-1 space-y-0">
+                  {rest.map((e) => <ActivityRow key={e.id} event={e} />)}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Toggle */}
+          {rest.length > 0 && (
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className="mt-1.5 flex items-center gap-1 text-[11px] text-slate-400 hover:text-brand-600 transition-colors font-medium"
+            >
+              <ChevronDown size={12} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
+              {expanded ? 'Show less' : `${rest.length} more event${rest.length > 1 ? 's' : ''}`}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ActivityGroups({ activity }) {
+  const groups = groupActivity(activity)
+  return groups.map((group, i) => (
+    <ActivityGroup key={`${group.prospect}-${i}`} group={group} isLast={i === groups.length - 1} />
+  ))
 }
 
 function StatCard({ label, value, sub, color, emoji, trend }) {
@@ -260,25 +356,7 @@ export default function Dashboard() {
             </span>
           </div>
         </div>
-        {activity.map((a, i) => (
-          <div
-            key={a.id}
-            className={`px-5 py-3 flex items-start gap-3 ${
-              i < activity.length - 1 ? 'border-b border-slate-50' : ''
-            }`}
-          >
-            <div className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-100/60 flex items-center justify-center flex-shrink-0 mt-0.5">
-              {ACTIVITY_ICONS[a.type]}
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[13px]">
-                <strong className="text-slate-900">{a.prospect}</strong>{' '}
-                <span className="text-slate-500">{a.text}</span>
-              </span>
-            </div>
-            <span className="text-[11px] text-slate-400 flex-shrink-0 mt-0.5 font-medium">{a.time}</span>
-          </div>
-        ))}
+        <ActivityGroups activity={activity} />
       </motion.div>
 
       {/* GA4 Acquisition Insights */}
